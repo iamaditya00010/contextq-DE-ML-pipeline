@@ -199,7 +199,55 @@ LineId,datetime,EventId,is_anomaly,anomaly_score
 
 ---
 
-## 🎯 Use Cases
+## 🧪 Testing
+
+### Test Suite Overview
+- **Total Tests:** 11 comprehensive tests
+- **Success Rate:** 100% (all tests pass)
+- **Framework:** pytest 7.4.4
+- **Coverage:** Integration testing approach
+
+### Test Categories
+- **🔍 Data Validation (3 tests):** Time format, PID validation, Month validation
+- **📁 File Operations (3 tests):** File existence, directory structure, output validation
+- **🤖 ML Model (3 tests):** Model file, predictions format, anomaly results
+- **📊 Data Quality (2 tests):** Gold layer CSV, Silver layer JSON validation
+
+### Running Tests
+```bash
+# Run all tests
+python -m pytest tests/test_pipeline.py -v
+
+# Run with coverage
+python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=term-missing -v
+
+# Run specific test category
+python -m pytest tests/test_pipeline.py::TestDataValidation -v
+```
+
+### Test Results
+```
+============================== test session starts ==============================
+collected 11 items
+
+tests/test_pipeline.py::TestDataValidation::test_time_format_validation PASSED [  9%]
+tests/test_pipeline.py::TestDataValidation::test_pid_validation PASSED   [ 18%]
+tests/test_pipeline.py::TestDataValidation::test_month_validation PASSED [ 27%]
+tests/test_pipeline.py::TestFileOperations::test_source_log_file_exists PASSED [ 36%]
+tests/test_pipeline.py::TestFileOperations::test_data_directories_exist PASSED [ 45%]
+tests/test_pipeline.py::TestFileOperations::test_output_files_exist PASSED [ 54%]
+tests/test_pipeline.py::TestMLModel::test_model_file_exists PASSED       [ 63%]
+tests/test_pipeline.py::TestMLModel::test_predictions_format PASSED      [ 72%]
+tests/test_pipeline.py::TestMLModel::test_anomaly_detection_results PASSED [ 81%]
+tests/test_pipeline.py::TestDataQuality::test_gold_layer_data_quality PASSED [ 90%]
+tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [100%]
+
+============================== 11 passed in 0.52s ==============================
+```
+
+**📚 Detailed Testing Documentation:** [TESTING_DOCUMENTATION.md](TESTING_DOCUMENTATION.md)
+
+---
 
 1. **Security Monitoring**: Detect brute force attacks
 2. **Threat Intelligence**: Identify suspicious IPs
@@ -213,6 +261,7 @@ LineId,datetime,EventId,is_anomaly,anomaly_score
 - **PIPELINE_README.md** - Complete pipeline documentation
 - **PIPELINE_COMPLETE.md** - Implementation summary
 - **LOG_FORMAT.md** - Log format specification
+- **TESTING_DOCUMENTATION.md** - Comprehensive testing guide
 
 ---
 
