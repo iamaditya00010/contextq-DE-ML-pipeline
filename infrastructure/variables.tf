@@ -1,6 +1,28 @@
 # Terraform variables for Azure deployment
 # Author: Aditya Padhi
 
+# Service Principal Authentication Variables
+variable "client_id" {
+  description = "Azure Service Principal Client ID"
+  type        = string
+}
+
+variable "client_secret" {
+  description = "Azure Service Principal Client Secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "tenant_id" {
+  description = "Azure Service Principal Tenant ID"
+  type        = string
+}
+
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
 variable "location" {
   description = "Azure region for resources"
   type        = string

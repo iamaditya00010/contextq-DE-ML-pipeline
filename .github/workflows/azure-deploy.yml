@@ -62,6 +62,31 @@ jobs:
       with:
         terraform_version: 1.5.0
     
+    - name: Configure Terraform Azure Provider
+      run: |
+        # Extract Service Principal details from AZURE_CREDENTIALS
+        echo "Configuring Terraform Azure Provider..."
+        
+        # Create terraform.tfvars file with Service Principal credentials
+        cat > infrastructure/terraform.tfvars << EOF
+        # Service Principal Configuration
+        client_id       = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')"
+        client_secret   = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')"
+        tenant_id       = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')"
+        subscription_id = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.subscriptionId')"
+        EOF
+        
+        # Set environment variables for Terraform
+        export ARM_CLIENT_ID="$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientId')"
+        export ARM_CLIENT_SECRET="$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')"
+        export ARM_TENANT_ID="$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')"
+        export ARM_SUBSCRIPTION_ID="$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.subscriptionId')"
+        
+        echo "ARM_CLIENT_ID=$ARM_CLIENT_ID" >> $GITHUB_ENV
+        echo "ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET" >> $GITHUB_ENV
+        echo "ARM_TENANT_ID=$ARM_TENANT_ID" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID" >> $GITHUB_ENV
+    
     - name: Terraform Init
       run: |
         cd infrastructure
