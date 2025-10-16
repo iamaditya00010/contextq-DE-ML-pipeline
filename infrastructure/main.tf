@@ -249,36 +249,3 @@ resource "azurerm_role_assignment" "databricks_storage" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_databricks_workspace.main.managed_resource_group_id
 }
-
-# Outputs
-output "resource_group_name" {
-  value = azurerm_resource_group.main.name
-}
-
-output "storage_account_name" {
-  value = azurerm_storage_account.datalake.name
-}
-
-output "databricks_workspace_url" {
-  value = azurerm_databricks_workspace.main.workspace_url
-}
-
-output "aks_cluster_name" {
-  value = azurerm_kubernetes_cluster.main.name
-}
-
-output "container_registry_name" {
-  value = azurerm_container_registry.main.name
-}
-
-output "key_vault_name" {
-  value = azurerm_key_vault.main.name
-}
-
-output "application_insights_key" {
-  value = azurerm_application_insights.main.instrumentation_key
-}
-
-output "log_analytics_workspace_id" {
-  value = azurerm_log_analytics_workspace.main.workspace_id
-}
