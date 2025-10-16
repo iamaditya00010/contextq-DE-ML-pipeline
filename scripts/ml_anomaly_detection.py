@@ -122,7 +122,7 @@ def train_anomaly_model(X, contamination=0.1):
     # Train model
     model.fit(X)
     
-    print(f"[ML] ✅ Model trained successfully!")
+    print(f"[ML] Model trained successfully!")
     
     return model
 
@@ -272,7 +272,7 @@ def main():
         # 1. Load data
         input_file = 'data/gold/openssh_logs_final.csv'
         if not os.path.exists(input_file):
-            print(f"❌ Error: {input_file} not found")
+            print(f"Error: {input_file} not found")
             print("Please run the pipeline first: python scripts/run_pipeline_pandas.py")
             return
         
@@ -302,19 +302,19 @@ def main():
         duration = end_time - start_time
         
         print("\n" + "=" * 70)
-        print("✅ ML PIPELINE COMPLETED SUCCESSFULLY")
+        print("ML PIPELINE COMPLETED SUCCESSFULLY")
         print("=" * 70)
         print(f"Duration: {duration}")
         print(f"\nOutputs:")
-        print(f"  📁 Model: models/anomaly_model.pkl")
-        print(f"  📁 Predictions: {output_file}")
-        print(f"  📁 Anomalies only: {anomalies_file}")
-        print(f"  📁 Summary report: data/ml_output/ml_summary_report.txt")
+        print(f"  Model: models/anomaly_model.pkl")
+        print(f"  Predictions: {output_file}")
+        print(f"  Anomalies only: {anomalies_file}")
+        print(f"  Summary report: data/ml_output/ml_summary_report.txt")
         print("\n🎉 Anomaly detection complete!")
         print("=" * 70 + "\n")
         
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\nError: {str(e)}")
         import traceback
         traceback.print_exc()
 

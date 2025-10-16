@@ -33,7 +33,7 @@ def bronze_layer():
     output_file = "data/bronze/raw_logs.parquet"
     
     if not os.path.exists(input_file):
-        print(f"❌ Input file not found: {input_file}")
+        print(f"Input file not found: {input_file}")
         return False
     
     # Read raw log file
@@ -53,7 +53,7 @@ def bronze_layer():
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     df.to_parquet(output_file, index=False)
     
-    print(f"✅ Saved {len(df)} records to {output_file}")
+    print(f"Saved {len(df)} records to {output_file}")
     return True
 
 
@@ -65,7 +65,7 @@ def silver_layer():
     output_dir = "data/silver"
     
     if not os.path.exists(input_file):
-        print(f"❌ Input file not found: {input_file}")
+        print(f"Input file not found: {input_file}")
         return False
     
     # Read Bronze data
@@ -139,7 +139,7 @@ def silver_layer():
     output_file = os.path.join(output_dir, 'structured_logs.json')
     silver_df.to_json(output_file, orient='records', lines=True)
     
-    print(f"✅ Saved {len(silver_df)} records to {output_file}")
+    print(f"Saved {len(silver_df)} records to {output_file}")
     return True
 
 
@@ -152,7 +152,7 @@ def gold_layer():
     output_file = os.path.join(output_dir, "openssh_logs_final.csv")
     
     if not os.path.exists(input_file):
-        print(f"❌ Input file not found: {input_file}")
+        print(f"Input file not found: {input_file}")
         return False
     
     # Read Silver data
@@ -178,7 +178,7 @@ def gold_layer():
     os.makedirs(output_dir, exist_ok=True)
     gold_df.to_csv(output_file, index=False)
     
-    print(f"✅ Saved {len(gold_df)} records to {output_file}")
+    print(f"Saved {len(gold_df)} records to {output_file}")
     
     # Show sample
     print("\nSample data (first 3 records):")
@@ -228,15 +228,15 @@ def main():
     print(f"Start Time:    {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"End Time:      {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Duration:      {duration}")
-    print(f"Status:        {'✅ SUCCESS' if success else '❌ FAILED'}")
+    print(f"Status:        {'SUCCESS' if success else 'FAILED'}")
     print("=" * 80)
     
     if success:
         print("\n🎉 Pipeline completed successfully!")
         print("\nOutput locations:")
-        print("  📁 Bronze: data/bronze/raw_logs.parquet")
-        print("  📁 Silver: data/silver/structured_logs.json")
-        print("  📁 Gold:   data/gold/openssh_logs_final.csv")
+        print("  Bronze: data/bronze/raw_logs.parquet")
+        print("  Silver: data/silver/structured_logs.json")
+        print("  Gold:   data/gold/openssh_logs_final.csv")
         print("\n")
     else:
         print("\n⚠️ Pipeline completed with errors.\n")

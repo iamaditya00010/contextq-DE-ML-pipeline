@@ -1,8 +1,8 @@
-# 🧪 Quick Testing Guide
+# Quick Testing Guide
 
 **Author:** Aditya Padhi
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 ```bash
@@ -24,7 +24,7 @@ python -m pytest tests/test_pipeline.py -v
 python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=term-missing -v
 ```
 
-## 📊 Test Summary
+## Test Summary
 
 | Category | Tests | Description |
 |----------|-------|-------------|
@@ -34,7 +34,7 @@ python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=term-missing 
 | **Data Quality** | 2 | Gold CSV, Silver JSON validation |
 | **Total** | **11** | **100% pass rate** |
 
-## 🎯 What Gets Tested
+## What Gets Tested
 
 ✅ **Data Validation**
 - Time format (HH:MM:SS)
@@ -58,7 +58,7 @@ python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=term-missing 
 - Required columns present
 - No null values in critical fields
 
-## 📈 Expected Results
+## Expected Results
 
 ```
 ============================== test session starts ==============================
@@ -79,7 +79,7 @@ tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [1
 ============================== 11 passed in 0.52s ==============================
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -102,7 +102,7 @@ python scripts/ml_anomaly_detection.py
 pip install pytest pytest-cov
 ```
 
-## 📚 More Information
+## More Information
 
 - **Full Documentation:** [TESTING_DOCUMENTATION.md](TESTING_DOCUMENTATION.md)
 - **Test Configuration:** `pytest.ini`

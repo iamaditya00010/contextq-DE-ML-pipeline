@@ -1,4 +1,4 @@
-# 🧪 Testing Documentation - DE Log Processing & ML Pipeline
+# Testing Documentation - DE Log Processing & ML Pipeline
 
 **Author:** Aditya Padhi
 
@@ -19,7 +19,7 @@ This document provides a comprehensive overview of the testing strategy, impleme
 
 ---
 
-## 🎯 Testing Overview
+## Testing Overview
 
 ### Testing Philosophy
 Our testing approach focuses on **integration testing** and **data validation** rather than unit testing individual functions. This approach is ideal for data pipelines because:
@@ -37,7 +37,7 @@ Our testing approach focuses on **integration testing** and **data validation** 
 
 ---
 
-## 📊 Test Categories
+## Test Categories
 
 ### 1. 🔍 Data Validation Tests (3 tests)
 
@@ -123,7 +123,7 @@ assert df['is_anomaly'].isin([0, 1]).all()
 
 ---
 
-## ✅ Test Results
+## Test Results
 
 ### Current Status
 ```
@@ -155,7 +155,7 @@ tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [1
 
 ---
 
-## 📈 Code Coverage Analysis
+## Code Coverage Analysis
 
 ### Coverage Report
 ```
@@ -190,7 +190,7 @@ TOTAL                               969    969     0%
 
 ---
 
-## 🚀 Running Tests
+## Running Tests
 
 ### Prerequisites
 ```bash
@@ -244,7 +244,7 @@ addopts =
 
 ---
 
-## 📁 Test Files Structure
+## Test Files Structure
 
 ```
 tests/
@@ -265,7 +265,7 @@ pytest.ini                     # Pytest configuration
 
 ---
 
-## ✅ What's Tested vs ❌ What's Not
+## What's Tested vs What's Not
 
 ### ✅ What's Tested (Integration Testing)
 
@@ -314,7 +314,7 @@ pytest.ini                     # Pytest configuration
 
 ---
 
-## 🔄 Future Improvements
+## Future Improvements
 
 ### Phase 1: Unit Testing (Recommended)
 ```python

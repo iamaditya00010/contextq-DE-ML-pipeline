@@ -1,4 +1,4 @@
-# 🔐 DE Log Processing & ML Pipeline with Anomaly Detection
+# DE Log Processing & ML Pipeline with Anomaly Detection
 
 A production-ready **3-layer data pipeline** (Bronze → Silver → Gold) for processing OpenSSH authentication logs with **ML-powered anomaly detection**.
 
@@ -10,7 +10,7 @@ A production-ready **3-layer data pipeline** (Bronze → Silver → Gold) for pr
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Raw OpenSSH Logs (2,000 events)
@@ -34,7 +34,7 @@ Raw OpenSSH Logs (2,000 events)
 
 ---
 
-## ✨ Features
+## Features
 
 - ✅ **3-Layer Data Pipeline** (Medallion Architecture)
 - ✅ **PySpark Implementation** (Databricks-ready)
@@ -45,7 +45,7 @@ Raw OpenSSH Logs (2,000 events)
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -66,7 +66,7 @@ python scripts/ml_anomaly_detection.py
 
 ---
 
-## 📊 Data Flow
+## Data Flow
 
 ### Bronze Layer
 - **Input**: Raw OpenSSH log files
@@ -104,7 +104,7 @@ python scripts/ml_anomaly_detection.py
 
 ---
 
-## 🤖 ML Model Details
+## ML Model Details
 
 ### Anomaly Detection
 
@@ -127,7 +127,7 @@ python scripts/ml_anomaly_detection.py
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 data-pipeline-openssh/
@@ -155,7 +155,7 @@ data-pipeline-openssh/
 
 ---
 
-## 📋 Data Quality Checks
+## Data Quality Checks
 
 The Silver layer implements 4 quality checks:
 
@@ -164,11 +164,11 @@ The Silver layer implements 4 quality checks:
 3. **PID Validation**: Numeric and not empty
 4. **Month Validation**: Valid month abbreviation
 
-**Result**: 100% of records passed quality checks ✅
+**Result**: 100% of records passed quality checks
 
 ---
 
-## 🔧 Technology Stack
+## Technology Stack
 
 | Component | Technology |
 |-----------|-----------|
@@ -179,7 +179,7 @@ The Silver layer implements 4 quality checks:
 
 ---
 
-## 📊 Sample Output
+## Sample Output
 
 ### Gold Layer CSV
 
@@ -199,7 +199,7 @@ LineId,datetime,EventId,is_anomaly,anomaly_score
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Test Suite Overview
 - **Total Tests:** 11 comprehensive tests
@@ -208,10 +208,10 @@ LineId,datetime,EventId,is_anomaly,anomaly_score
 - **Coverage:** Integration testing approach
 
 ### Test Categories
-- **🔍 Data Validation (3 tests):** Time format, PID validation, Month validation
-- **📁 File Operations (3 tests):** File existence, directory structure, output validation
-- **🤖 ML Model (3 tests):** Model file, predictions format, anomaly results
-- **📊 Data Quality (2 tests):** Gold layer CSV, Silver layer JSON validation
+- **Data Validation (3 tests):** Time format, PID validation, Month validation
+- **File Operations (3 tests):** File existence, directory structure, output validation
+- **ML Model (3 tests):** Model file, predictions format, anomaly results
+- **Data Quality (2 tests):** Gold layer CSV, Silver layer JSON validation
 
 ### Running Tests
 ```bash
@@ -245,7 +245,7 @@ tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [1
 ============================== 11 passed in 0.52s ==============================
 ```
 
-**📚 Detailed Testing Documentation:** [TESTING_DOCUMENTATION.md](TESTING_DOCUMENTATION.md)
+**Detailed Testing Documentation:** [TESTING_DOCUMENTATION.md](TESTING_DOCUMENTATION.md)
 
 ---
 
@@ -256,7 +256,7 @@ tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [1
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - **PIPELINE_README.md** - Complete pipeline documentation
 - **PIPELINE_COMPLETE.md** - Implementation summary
@@ -265,7 +265,7 @@ tests/test_pipeline.py::TestDataQuality::test_silver_layer_json_format PASSED [1
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Local Development
 ```bash
@@ -279,7 +279,7 @@ python scripts/run_pipeline_pandas.py
 
 ---
 
-## 📈 Performance
+## Performance
 
 - **Pipeline Speed**: <1 second (2,000 records)
 - **ML Training**: <1 second
@@ -290,13 +290,13 @@ python scripts/run_pipeline_pandas.py
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 Aditya Padhi
 
 ---
 
-## 🎉 Acknowledgments
+## Acknowledgments
 
 - Built for Data & AI Engineering Assignment
 - Uses Apache Spark, scikit-learn
@@ -304,5 +304,5 @@ Aditya Padhi
 
 ---
 
-**⭐ If you find this useful, please star the repository!**
+**If you find this useful, please star the repository!**
 
