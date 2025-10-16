@@ -6,12 +6,8 @@ terraform {
       version = "~>3.0"
     }
   }
-  backend "azurerm" {
-    resource_group_name  = "de-log-processing-tfstate-rg"
-    storage_account_name = "delogprocessingtfstate"
-    container_name       = "tfstate"
-    key                  = "terraform.tfstate"
-  }
+  # Using local state for initial deployment
+  # Remote backend can be configured later after resources are created
 }
 
 provider "azurerm" {
