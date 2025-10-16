@@ -294,15 +294,3 @@ python scripts/run_pipeline_pandas.py
 
 Aditya Padhi
 
----
-
-## Acknowledgments
-
-- Built for Data & AI Engineering Assignment
-- Uses Apache Spark, scikit-learn
-- Follows Azure best practices
-
----
-
-**If you find this useful, please star the repository!**
-
