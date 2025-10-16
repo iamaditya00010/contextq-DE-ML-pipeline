@@ -294,3 +294,5 @@ python scripts/run_pipeline_pandas.py
 
 Aditya Padhi
 
+# Azure Deployment Ready
+Deployment triggered on Thu Oct 16 23:49:13 IST 2025
