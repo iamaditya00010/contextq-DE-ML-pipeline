@@ -1,0 +1,27 @@
+environment: local
+
+paths:
+  bronze: ./data/bronze
+  silver: ./data/silver
+  gold: ./data/gold
+  models: ./data/models
+
+spark:
+  app_name: "Data Pipeline - Local"
+  master: "local[*]"
+  executor_memory: "2g"
+  driver_memory: "2g"
+
+etl:
+  batch_size: 1000
+  partition_column: "processing_date"
+  
+ml:
+  train_split: 0.8
+  test_split: 0.2
+  random_seed: 42
+
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "/local-ml-pipeline"
+

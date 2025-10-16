@@ -1,0 +1,63 @@
+# Data files (don't commit large data to GitHub)
+data/
+models/
+*.parquet
+*.json
+*.csv
+
+# Keep the source log file (it's small)
+logs/*.log
+!logs/OpenSSH_2k.log
+
+# But keep directory structure
+!data/.gitkeep
+!logs/.gitkeep
+!models/.gitkeep
+
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+htmlcov/
+.coverage
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+.env.local
+*.key
+*.pem
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Spark
+spark-warehouse/
+derby.log
+metastore_db/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+Thumbs.db
