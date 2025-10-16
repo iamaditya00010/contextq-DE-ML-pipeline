@@ -14,7 +14,7 @@ env:
   IMAGE_NAME: de-log-processing-api
 
 jobs:
-  test:
+  lint-and-validate:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -28,26 +28,23 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install pytest pytest-cov flake8
+        pip install flake8
     
     - name: Lint code
       run: |
         flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 scripts/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
-    - name: Run tests
+    - name: Validate code structure
       run: |
-        python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=xml --cov-report=term-missing
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+        echo "Validating code structure..."
+        python -c "import scripts.bronze.raw_load; print('Bronze script OK')"
+        python -c "import scripts.silver.silver_load; print('Silver script OK')"
+        python -c "import scripts.gold.gold_load; print('Gold script OK')"
+        python -c "import scripts.ml_anomaly_detection; print('ML script OK')"
 
   deploy-infrastructure:
-    needs: test
+    needs: lint-and-validate
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
@@ -280,9 +277,76 @@ jobs:
         name: deployment-report
         path: deployment-report.md
 
+  test-pipeline:
+    needs: validate-deployment
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Download Terraform Outputs
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-outputs
+    
+    - name: Test Pipeline Execution
+      run: |
+        echo "Testing pipeline execution..."
+        
+        # Test 1: Check if source data exists in Azure Storage
+        echo "Checking source data in Azure Storage..."
+        az storage blob exists --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode key
+        
+        # Test 2: Check if Databricks workspace is accessible
+        echo "Checking Databricks workspace..."
+        databricks workspace list --path /
+        
+        # Test 3: Check if AKS services are running
+        echo "Checking AKS services..."
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name de-log-processing-aks-$(cat terraform-outputs.json | jq -r '.aks_cluster_name.value' | sed 's/de-log-processing-aks-//')
+        kubectl get pods
+        kubectl get services
+    
+    - name: Run Comprehensive Tests
+      run: |
+        echo "Running comprehensive pipeline tests..."
+        python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=xml --cov-report=term-missing -v
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: |
+          coverage.xml
+          .coverage
+          htmlcov/
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: integration-tests
+        name: codecov-pipeline-tests
+
   cleanup:
     if: always()
-    needs: [test, deploy-infrastructure, deploy-databricks, deploy-aks, deploy-data-factory, validate-deployment]
+    needs: [lint-and-validate, deploy-infrastructure, deploy-databricks, deploy-aks, deploy-data-factory, validate-deployment, test-pipeline]
     runs-on: ubuntu-latest
     
     steps:
