@@ -67,6 +67,9 @@ jobs:
         # Extract Service Principal details from AZURE_CREDENTIALS
         echo "Configuring Terraform Azure Provider..."
         
+        # Generate random suffix for unique resource names
+        RANDOM_SUFFIX=$(openssl rand -hex 4)
+        
         # Create terraform.tfvars file with Service Principal credentials
         cat > infrastructure/terraform.tfvars << EOF
         # Service Principal Configuration
@@ -74,6 +77,9 @@ jobs:
         client_secret   = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.clientSecret')"
         tenant_id       = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.tenantId')"
         subscription_id = "$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r '.subscriptionId')"
+        
+        # Random suffix for unique resource names
+        random_suffix = "-${RANDOM_SUFFIX}"
         EOF
         
         # Set environment variables for Terraform

@@ -25,14 +25,10 @@ data "azurerm_client_config" "current" {}
 
 # Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "de-log-processing-rg"
-  location = "East US"
+  name     = "${var.project_name}-rg${var.random_suffix}"
+  location = var.location
   
-  tags = {
-    Environment = "Production"
-    Project     = "DE-Log-Processing"
-    Author      = "Aditya Padhi"
-  }
+  tags = var.tags
 }
 
 # Storage Account for ADLS Gen2

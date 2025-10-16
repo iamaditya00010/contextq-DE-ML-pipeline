@@ -47,6 +47,12 @@ variable "author" {
   default     = "Aditya Padhi"
 }
 
+variable "random_suffix" {
+  description = "Random suffix to make resource names unique"
+  type        = string
+  default     = ""
+}
+
 variable "aks_node_count" {
   description = "Number of nodes in AKS cluster"
   type        = number
