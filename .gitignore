@@ -9,6 +9,9 @@ models/
 logs/*.log
 !logs/OpenSSH_2k.log
 
+# Keep shell scripts local (don't push to GitHub)
+*.sh
+
 # But keep directory structure
 !data/.gitkeep
 !logs/.gitkeep

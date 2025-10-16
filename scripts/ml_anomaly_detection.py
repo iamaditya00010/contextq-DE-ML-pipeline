@@ -3,6 +3,8 @@ ML Model: SSH Log Anomaly Detection
 ====================================
 This script trains an anomaly detection model to identify suspicious SSH login attempts.
 
+Author: Aditya Padhi
+
 Model: Isolation Forest (unsupervised learning)
 Input: Gold layer CSV (data/gold/openssh_logs_final.csv)
 Output: 

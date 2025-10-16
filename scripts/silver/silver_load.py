@@ -5,6 +5,8 @@ This script reads Bronze layer data, parses OpenSSH log format,
 extracts structured fields, applies quality checks and transformations,
 and saves to Silver layer as JSON.
 
+Author: Aditya Padhi
+
 Input: data/bronze/raw_logs.parquet
 Output: data/silver/structured_logs.json
 """

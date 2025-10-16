@@ -4,6 +4,8 @@ Gold Layer: Final Aggregation and Business Logic
 This script reads Silver layer data, combines date/time fields into a single datetime column,
 and saves the final curated data to Gold layer as CSV.
 
+Author: Aditya Padhi
+
 Transformations:
 - Combine Date, Day, Time into single datetime column (format: dd-mm-yyyy : hh:mm:ss)
 - Remove original Date, Day, Time columns

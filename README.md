@@ -1,6 +1,8 @@
-# 🔐 OpenSSH Log Processing & ML Pipeline
+# 🔐 DE Log Processing & ML Pipeline with Anomaly Detection
 
 A production-ready **3-layer data pipeline** (Bronze → Silver → Gold) for processing OpenSSH authentication logs with **ML-powered anomaly detection**.
+
+**Author:** Aditya Padhi
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![PySpark](https://img.shields.io/badge/PySpark-3.4.1-orange.svg)](https://spark.apache.org/)

@@ -4,6 +4,8 @@ Bronze Layer: Raw Load Script
 This script loads raw OpenSSH log files and saves them as-is to Parquet format.
 No transformations are applied - this is the raw data layer.
 
+Author: Aditya Padhi
+
 Input: logs/OpenSSH_2k.log (raw text log file)
 Output: data/bronze/raw_logs.parquet (raw data in Parquet format)
 """
