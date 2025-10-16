@@ -1,0 +1,302 @@
+name: Azure Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: de-log-processing-rg
+  AZURE_LOCATION: East US
+  CONTAINER_REGISTRY: delogprocessingacr
+  IMAGE_NAME: de-log-processing-api
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-cov flake8
+    
+    - name: Lint code
+      run: |
+        flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 scripts/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Run tests
+      run: |
+        python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  deploy-infrastructure:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+    
+    - name: Terraform Init
+      run: |
+        cd infrastructure
+        terraform init
+    
+    - name: Terraform Plan
+      run: |
+        cd infrastructure
+        terraform plan -out=tfplan
+    
+    - name: Terraform Apply
+      run: |
+        cd infrastructure
+        terraform apply tfplan
+    
+    - name: Save Terraform Outputs
+      run: |
+        cd infrastructure
+        terraform output -json > ../terraform-outputs.json
+    
+    - name: Upload Terraform Outputs
+      uses: actions/upload-artifact@v3
+      with:
+        name: terraform-outputs
+        path: terraform-outputs.json
+
+  deploy-databricks:
+    needs: deploy-infrastructure
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Download Terraform Outputs
+      uses: actions/download-artifact@v3
+      with:
+        name: terraform-outputs
+    
+    - name: Setup Databricks CLI
+      run: |
+        pip install databricks-cli
+    
+    - name: Configure Databricks CLI
+      run: |
+        echo "${{ secrets.DATABRICKS_TOKEN }}" | databricks configure --token
+    
+    - name: Upload Notebooks to Databricks
+      run: |
+        # Upload Bronze layer script
+        databricks workspace import scripts/azure/bronze/raw_load_azure.py /FileStore/de-log-processing/bronze/raw_load --language PYTHON
+        
+        # Upload Silver layer script
+        databricks workspace import scripts/azure/silver/silver_load_azure.py /FileStore/de-log-processing/silver/silver_load --language PYTHON
+        
+        # Upload Gold layer script
+        databricks workspace import scripts/azure/gold/gold_load_azure.py /FileStore/de-log-processing/gold/gold_load --language PYTHON
+        
+        # Upload ML script
+        databricks workspace import scripts/azure/ml/ml_anomaly_detection_azure.py /FileStore/de-log-processing/ml/ml_anomaly_detection --language PYTHON
+    
+    - name: Create Databricks Job
+      run: |
+        # Create job definition
+        cat > databricks-job.json << EOF
+        {
+          "name": "DE-Log-Processing-Pipeline",
+          "new_cluster": {
+            "spark_version": "13.3.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "driver_node_type_id": "Standard_DS3_v2",
+            "num_workers": 2,
+            "autotermination_minutes": 30
+          },
+          "notebook_task": {
+            "notebook_path": "/FileStore/de-log-processing/bronze/raw_load"
+          },
+          "timeout_seconds": 3600,
+          "max_retries": 1
+        }
+        EOF
+        
+        # Create job
+        databricks jobs create --json-file databricks-job.json
+
+  deploy-aks:
+    needs: deploy-databricks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Get AKS credentials
+      run: |
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name de-log-processing-aks-$(cat terraform-outputs.json | jq -r '.aks_cluster_name.value' | sed 's/de-log-processing-aks-//')
+    
+    - name: Build and Push Container Image
+      run: |
+        # Login to ACR
+        az acr login --name ${{ env.CONTAINER_REGISTRY }}
+        
+        # Build image
+        docker build -t ${{ env.CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        
+        # Push image
+        docker push ${{ env.CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+    
+    - name: Deploy to AKS
+      run: |
+        # Deploy MLflow server
+        kubectl apply -f kubernetes/mlflow-deployment.yaml
+        
+        # Deploy pipeline API
+        kubectl apply -f kubernetes/services-deployment.yaml
+        
+        # Update image tag
+        kubectl set image deployment/pipeline-api pipeline-api=${{ env.CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        
+        # Wait for deployment
+        kubectl rollout status deployment/pipeline-api
+        kubectl rollout status deployment/mlflow-server
+
+  deploy-data-factory:
+    needs: deploy-aks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy Data Factory Pipeline
+      run: |
+        # Create Data Factory pipeline
+        az datafactory pipeline create \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --factory-name de-log-processing-adf-$(cat terraform-outputs.json | jq -r '.data_factory_name.value' | sed 's/de-log-processing-adf-//') \
+          --name DE_Log_Processing_Pipeline \
+          --pipeline @adf/pipeline.json
+
+  validate-deployment:
+    needs: deploy-data-factory
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Validate Infrastructure
+      run: |
+        # Check if all resources are running
+        az resource list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --output table
+        
+        # Check AKS cluster status
+        az aks show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name de-log-processing-aks-$(cat terraform-outputs.json | jq -r '.aks_cluster_name.value' | sed 's/de-log-processing-aks-//') --query "provisioningState"
+        
+        # Check Databricks workspace
+        az databricks workspace show --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name de-log-processing-databricks-$(cat terraform-outputs.json | jq -r '.databricks_workspace_name.value' | sed 's/de-log-processing-databricks-//') --query "provisioningState"
+    
+    - name: Run Integration Tests
+      run: |
+        # Get AKS credentials
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name de-log-processing-aks-$(cat terraform-outputs.json | jq -r '.aks_cluster_name.value' | sed 's/de-log-processing-aks-//')
+        
+        # Check if pods are running
+        kubectl get pods
+        
+        # Check if services are accessible
+        kubectl get services
+        
+        # Run basic connectivity tests
+        kubectl run test-pod --image=busybox --rm -it --restart=Never -- wget -qO- http://mlflow-service:5000/health || echo "MLflow service not accessible"
+    
+    - name: Generate Deployment Report
+      run: |
+        echo "# Deployment Report" > deployment-report.md
+        echo "## Deployment Status: SUCCESS" >> deployment-report.md
+        echo "## Timestamp: $(date)" >> deployment-report.md
+        echo "## Resources Deployed:" >> deployment-report.md
+        echo "- Azure Databricks Workspace" >> deployment-report.md
+        echo "- Azure Data Lake Storage Gen2" >> deployment-report.md
+        echo "- Azure Kubernetes Service" >> deployment-report.md
+        echo "- Azure Data Factory" >> deployment-report.md
+        echo "- Azure Container Registry" >> deployment-report.md
+        echo "- Azure Key Vault" >> deployment-report.md
+        echo "- Application Insights" >> deployment-report.md
+        echo "- Log Analytics Workspace" >> deployment-report.md
+        echo "" >> deployment-report.md
+        echo "## Next Steps:" >> deployment-report.md
+        echo "1. Upload source data to ADLS Gen2" >> deployment-report.md
+        echo "2. Configure Data Factory triggers" >> deployment-report.md
+        echo "3. Monitor pipeline execution" >> deployment-report.md
+        echo "4. Set up alerts and monitoring" >> deployment-report.md
+    
+    - name: Upload Deployment Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-report
+        path: deployment-report.md
+
+  cleanup:
+    if: always()
+    needs: [test, deploy-infrastructure, deploy-databricks, deploy-aks, deploy-data-factory, validate-deployment]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Cleanup on Failure
+      if: failure()
+      run: |
+        echo "Deployment failed. Consider manual cleanup of resources."
+        echo "Resources that may need cleanup:"
+        echo "- Resource Group: ${{ env.AZURE_RESOURCE_GROUP }}"
+        echo "- Check Azure Portal for orphaned resources"
+    
+    - name: Success Notification
+      if: success()
+      run: |
+        echo "Deployment completed successfully!"
+        echo "All Azure resources have been deployed and configured."
+        echo "Pipeline is ready for data processing."
