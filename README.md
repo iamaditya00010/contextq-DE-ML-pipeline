@@ -176,7 +176,6 @@ The Silver layer implements 4 quality checks:
 | **ML Model** | scikit-learn (Isolation Forest) |
 | **Storage Formats** | Parquet, JSON, CSV |
 | **Deployment** | Azure Databricks, Azure Data Factory |
-| **CI/CD** | GitHub Actions (planned) |
 
 ---
 
@@ -240,24 +239,11 @@ python scripts/run_pipeline_pandas.py
 
 ---
 
-## 🤝 Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
-
----
-
-## 📄 License
-
-MIT License - See LICENSE file
-
 ---
 
 ## 👨‍💻 Author
 
-Data Engineering Team
+Aditya Padhi
 
 ---
 
