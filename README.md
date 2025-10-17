@@ -1,4 +1,5 @@
 # DE Log Processing & ML Pipeline with Anomaly Detection
+<!-- Pipeline execution triggered: $(date) -->
 
 A production-ready **3-layer data pipeline** (Bronze → Silver → Gold) for processing OpenSSH authentication logs with **ML-powered anomaly detection**.
 
