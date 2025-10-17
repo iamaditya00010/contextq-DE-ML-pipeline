@@ -139,7 +139,7 @@ enhanced_df.write \
     .mode("overwrite") \
     .json(silver_output_path)
 
-print(f"✅ Silver layer data saved successfully to: {silver_output_path}")
+print(f"Silver layer data saved successfully to: {silver_output_path}")
 
 # COMMAND ----------
 
@@ -182,6 +182,6 @@ for key, value in summary.items():
     print(f"{key}: {value}")
 print("=" * 70)
 
-print("✅ Silver layer processing completed successfully!")
-print("📊 Raw data transformed to structured JSON format")
-print("🎯 Ready for Gold layer processing")
+print("Silver layer processing completed successfully!")
+print("Raw data transformed to structured JSON format")
+print("Ready for Gold layer processing")

@@ -37,12 +37,12 @@ Raw OpenSSH Logs (2,000 events)
 
 ## Features
 
-- ✅ **3-Layer Data Pipeline** (Medallion Architecture)
-- ✅ **PySpark Implementation** (Databricks-ready)
-- ✅ **Data Quality Checks** (4 comprehensive validations)
-- ✅ **ML Anomaly Detection** (Isolation Forest)
-- ✅ **Dual Implementation** (PySpark + Pandas for local testing)
-- ✅ **Complete Documentation**
+- **3-Layer Data Pipeline** (Medallion Architecture)
+- **PySpark Implementation** (Databricks-ready)
+- **Data Quality Checks** (4 comprehensive validations)
+- **ML Anomaly Detection** (Isolation Forest)
+- **Dual Implementation** (PySpark + Pandas for local testing)
+- **Complete Documentation**
 
 ---
 
@@ -122,9 +122,9 @@ python scripts/ml_anomaly_detection.py
 - Event rarity scores
 
 **Results** (on 2,000 records):
-- ✅ Detected 170 anomalies (8.5%)
-- ✅ Peak anomaly hours: 07:00-08:00
-- ✅ Top anomaly types: Failed passwords, Invalid users
+- Detected 170 anomalies (8.5%)
+- Peak anomaly hours: 07:00-08:00
+- Top anomaly types: Failed passwords, Invalid users
 
 ---
 

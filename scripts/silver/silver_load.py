@@ -332,7 +332,7 @@ def save_to_silver(df, output_path):
         .mode("overwrite") \
         .json(output_path)
     
-    print(f"[SILVER] ✅ Successfully saved {silver_df.count()} records to Silver layer")
+    print(f"[SILVER] Successfully saved {silver_df.count()} records to Silver layer")
 
 
 def main():

@@ -119,7 +119,7 @@ with mlflow.start_run(run_name=f"anomaly_detection_{datetime.now().strftime('%Y%
     mlflow.log_param("n_estimators", 100)
     mlflow.log_param("feature_columns", feature_columns)
     
-    print("✅ Model trained successfully")
+    print("Model trained successfully")
 
 # COMMAND ----------
 
@@ -166,7 +166,7 @@ with open('/tmp/anomaly_model.pkl', 'wb') as f:
     pickle.dump(model_data, f)
 
 # Upload to Azure Storage (this would need proper Azure Storage SDK)
-print("✅ Model saved successfully")
+print("Model saved successfully")
 
 # COMMAND ----------
 
@@ -176,7 +176,7 @@ predictions_df = df[['datetime', 'hostname', 'process', 'message', 'is_anomaly',
 
 # Save to Azure Storage
 predictions_df.to_csv('/tmp/anomaly_predictions.csv', index=False)
-print("✅ Predictions saved successfully")
+print("Predictions saved successfully")
 
 # COMMAND ----------
 
@@ -212,7 +212,7 @@ with mlflow.start_run(run_name=f"model_registration_{datetime.now().strftime('%Y
         }
     )
     
-    print("✅ Model registered in MLflow successfully")
+    print("Model registered in MLflow successfully")
 
 # COMMAND ----------
 
@@ -261,7 +261,7 @@ for key, value in summary.items():
     print(f"{key}: {value}")
 print("=" * 70)
 
-print("✅ ML anomaly detection completed successfully!")
-print("🎯 Model trained and registered in MLflow")
-print("📊 Anomalies detected and saved")
-print("🚀 Ready for production deployment")
+print("ML anomaly detection completed successfully!")
+print("Model trained and registered in MLflow")
+print("Anomalies detected and saved")
+print("Ready for production deployment")

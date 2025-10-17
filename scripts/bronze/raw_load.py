@@ -75,7 +75,7 @@ def save_to_bronze(df, output_path):
         .mode("overwrite") \
         .parquet(output_path)
     
-    print(f"[BRONZE] ✅ Successfully saved {df.count()} records to Bronze layer")
+    print(f"[BRONZE] Successfully saved {df.count()} records to Bronze layer")
 
 
 def main():

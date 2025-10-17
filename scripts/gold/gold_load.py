@@ -200,7 +200,7 @@ def save_to_gold(df, output_path):
         .option("header", "true") \
         .csv(output_path)
     
-    print(f"[GOLD] ✅ Successfully saved {df.count()} records to Gold layer")
+    print(f"[GOLD] Successfully saved {df.count()} records to Gold layer")
     
     # Rename the output file to remove part-00000 prefix
     import glob

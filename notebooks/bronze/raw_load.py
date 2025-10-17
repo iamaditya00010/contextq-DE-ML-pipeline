@@ -95,7 +95,7 @@ bronze_df.write \
     .mode("overwrite") \
     .parquet(bronze_output_path)
 
-print(f"✅ Bronze layer data saved successfully to: {bronze_output_path}")
+print(f"Bronze layer data saved successfully to: {bronze_output_path}")
 
 # COMMAND ----------
 
@@ -138,6 +138,6 @@ for key, value in summary.items():
     print(f"{key}: {value}")
 print("=" * 70)
 
-print("✅ Bronze layer processing completed successfully!")
-print("📊 Raw data converted to Parquet format")
-print("🎯 Ready for Silver layer processing")
+print("Bronze layer processing completed successfully!")
+print("Raw data converted to Parquet format")
+print("Ready for Silver layer processing")

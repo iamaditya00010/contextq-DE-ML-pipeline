@@ -361,10 +361,10 @@ def main():
             print(f"  Predictions: {output_file}")
             print(f"  Anomalies only: {anomalies_file}")
             print(f"  Summary report: data/ml_output/ml_summary_report.txt")
-            print(f"\n🎯 Model registered in MLflow as 'ssh_anomaly_detector'")
-            print(f"📊 Anomaly rate: {anomaly_rate:.2f}%")
-            print(f"🔍 Total anomalies detected: {anomaly_count:,}")
-            print("\n🎉 Anomaly detection complete!")
+            print(f"\nModel registered in MLflow as 'ssh_anomaly_detector'")
+            print(f"Anomaly rate: {anomaly_rate:.2f}%")
+            print(f"Total anomalies detected: {anomaly_count:,}")
+            print("\nAnomaly detection complete!")
             print("=" * 70 + "\n")
             
         except Exception as e:

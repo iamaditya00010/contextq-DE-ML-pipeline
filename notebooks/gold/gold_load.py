@@ -126,7 +126,7 @@ final_gold_df.write \
     .option("header", "true") \
     .csv(gold_output_path)
 
-print(f"✅ Gold layer data saved successfully to: {gold_output_path}")
+print(f"Gold layer data saved successfully to: {gold_output_path}")
 
 # COMMAND ----------
 
@@ -170,6 +170,6 @@ for key, value in summary.items():
     print(f"{key}: {value}")
 print("=" * 70)
 
-print("✅ Gold layer processing completed successfully!")
-print("📊 Structured data with feature engineering")
-print("🎯 Ready for ML model training")
+print("Gold layer processing completed successfully!")
+print("Structured data with feature engineering")
+print("Ready for ML model training")
