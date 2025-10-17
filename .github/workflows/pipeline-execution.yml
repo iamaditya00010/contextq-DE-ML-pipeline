@@ -10,11 +10,11 @@ on:
 env:
   # Resource Groups
   MAIN_RESOURCE_GROUP: "de-log-processing-rg"
-  DATABRICKS_RESOURCE_GROUP: "DE-Log-Processing-rg-dbf6d727"
+  DATABRICKS_RESOURCE_GROUP: "de-log-processing-rg"
   
   # Resource Names
   STORAGE_ACCOUNT_NAME: "delogprocessingdatalake"
-  DATABRICKS_WORKSPACE: "adb-4365470537346742.2"
+  DATABRICKS_WORKSPACE: "adb-3683882154975704.4"
   AKS_CLUSTER_NAME: "de-log-processing-aks"
   CONTAINER_REGISTRY: "delogprocessingacrjs9d"
   KEY_VAULT_NAME: "de-log-processing-kv"
