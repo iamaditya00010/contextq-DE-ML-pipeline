@@ -1,15 +1,17 @@
 """
-ML Model: SSH Log Anomaly Detection
-====================================
+ML Model: SSH Log Anomaly Detection with MLflow
+===============================================
 This script trains an anomaly detection model to identify suspicious SSH login attempts.
+Integrated with MLflow for model tracking and serving.
 
 Author: Aditya Padhi
 
 Model: Isolation Forest (unsupervised learning)
 Input: Gold layer CSV (data/gold/openssh_logs_final.csv)
 Output: 
-  - Trained model (models/anomaly_model.pkl)
+  - Trained model registered in MLflow
   - Predictions with anomaly scores (data/ml_output/anomaly_predictions.csv)
+  - Model artifacts and metrics tracked in MLflow
 
 Features used:
   - Event type patterns
@@ -22,10 +24,14 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import classification_report, confusion_matrix
 import pickle
 import os
 from datetime import datetime
 import warnings
+import mlflow
+import mlflow.sklearn
+from mlflow.models import infer_signature
 warnings.filterwarnings('ignore')
 
 
@@ -257,66 +263,115 @@ def generate_summary_report(df, output_dir='data/ml_output'):
 
 
 def main():
-    """Main execution"""
+    """Main execution with MLflow integration"""
     
     print("\n" + "█" * 70)
     print("█" + " " * 68 + "█")
     print("█" + "  SSH LOG ANOMALY DETECTION".center(68) + "█")
-    print("█" + "  Isolation Forest Model".center(68) + "█")
+    print("█" + "  Isolation Forest Model + MLflow".center(68) + "█")
     print("█" + " " * 68 + "█")
     print("█" * 70 + "\n")
     
     start_time = datetime.now()
     
-    try:
-        # 1. Load data
-        input_file = 'data/gold/openssh_logs_final.csv'
-        if not os.path.exists(input_file):
-            print(f"Error: {input_file} not found")
-            print("Please run the pipeline first: python scripts/run_pipeline_pandas.py")
-            return
-        
-        df = load_gold_data(input_file)
-        
-        # 2. Feature engineering
-        X, df_features, le_event, le_component = feature_engineering(df)
-        
-        # 3. Train model
-        model = train_anomaly_model(X, contamination=0.1)
-        
-        # 4. Detect anomalies
-        df_predictions = detect_anomalies(model, X, df_features)
-        
-        # 5. Save model
-        encoders = {'event': le_event, 'component': le_component}
-        save_model(model, encoders)
-        
-        # 6. Save predictions
-        output_file, anomalies_file = save_predictions(df_predictions)
-        
-        # 7. Generate report
-        generate_summary_report(df_predictions)
-        
-        # Summary
-        end_time = datetime.now()
-        duration = end_time - start_time
-        
-        print("\n" + "=" * 70)
-        print("ML PIPELINE COMPLETED SUCCESSFULLY")
-        print("=" * 70)
-        print(f"Duration: {duration}")
-        print(f"\nOutputs:")
-        print(f"  Model: models/anomaly_model.pkl")
-        print(f"  Predictions: {output_file}")
-        print(f"  Anomalies only: {anomalies_file}")
-        print(f"  Summary report: data/ml_output/ml_summary_report.txt")
-        print("\n🎉 Anomaly detection complete!")
-        print("=" * 70 + "\n")
-        
-    except Exception as e:
-        print(f"\nError: {str(e)}")
-        import traceback
-        traceback.print_exc()
+    # Set MLflow experiment
+    mlflow.set_experiment("ssh-anomaly-detection")
+    
+    with mlflow.start_run(run_name=f"anomaly_detection_{datetime.now().strftime('%Y%m%d_%H%M%S')}"):
+        try:
+            # 1. Load data
+            input_file = 'data/gold/openssh_logs_final.csv'
+            if not os.path.exists(input_file):
+                print(f"Error: {input_file} not found")
+                print("Please run the pipeline first: python scripts/run_pipeline_pandas.py")
+                return
+            
+            df = load_gold_data(input_file)
+            
+            # Log data info
+            mlflow.log_param("total_records", len(df))
+            mlflow.log_param("input_file", input_file)
+            
+            # 2. Feature engineering
+            X, df_features, le_event, le_component = feature_engineering(df)
+            
+            # Log feature info
+            mlflow.log_param("num_features", X.shape[1])
+            mlflow.log_param("feature_names", list(X.columns))
+            
+            # 3. Train model
+            contamination = 0.1
+            mlflow.log_param("contamination", contamination)
+            model = train_anomaly_model(X, contamination=contamination)
+            
+            # 4. Detect anomalies
+            df_predictions = detect_anomalies(model, X, df_features)
+            
+            # Calculate metrics
+            anomaly_count = len(df_predictions[df_predictions['is_anomaly'] == 1])
+            anomaly_rate = anomaly_count / len(df_predictions) * 100
+            
+            # Log metrics
+            mlflow.log_metric("anomaly_count", anomaly_count)
+            mlflow.log_metric("anomaly_rate", anomaly_rate)
+            mlflow.log_metric("total_predictions", len(df_predictions))
+            
+            # 5. Save model and artifacts
+            encoders = {'event': le_event, 'component': le_component}
+            model_path = save_model(model, encoders)
+            
+            # 6. Save predictions
+            output_file, anomalies_file = save_predictions(df_predictions)
+            
+            # Log model artifacts
+            mlflow.log_artifact(model_path)
+            mlflow.log_artifact(output_file)
+            mlflow.log_artifact(anomalies_file)
+            
+            # 7. Generate summary
+            generate_summary_report(df_predictions)
+            mlflow.log_artifact("data/ml_output/ml_summary_report.txt")
+            
+            # 8. Register model in MLflow
+            signature = infer_signature(X, df_predictions[['is_anomaly', 'anomaly_score']])
+            
+            mlflow.sklearn.log_model(
+                sk_model=model,
+                artifact_path="anomaly_model",
+                signature=signature,
+                registered_model_name="ssh_anomaly_detector",
+                metadata={
+                    "model_type": "IsolationForest",
+                    "features": list(X.columns),
+                    "contamination": contamination,
+                    "anomaly_rate": anomaly_rate
+                }
+            )
+            
+            # Summary
+            end_time = datetime.now()
+            duration = end_time - start_time
+            
+            print("\n" + "=" * 70)
+            print("ML PIPELINE COMPLETED SUCCESSFULLY")
+            print("=" * 70)
+            print(f"Duration: {duration}")
+            print(f"\nOutputs:")
+            print(f"  Model: {model_path}")
+            print(f"  Predictions: {output_file}")
+            print(f"  Anomalies only: {anomalies_file}")
+            print(f"  Summary report: data/ml_output/ml_summary_report.txt")
+            print(f"\n🎯 Model registered in MLflow as 'ssh_anomaly_detector'")
+            print(f"📊 Anomaly rate: {anomaly_rate:.2f}%")
+            print(f"🔍 Total anomalies detected: {anomaly_count:,}")
+            print("\n🎉 Anomaly detection complete!")
+            print("=" * 70 + "\n")
+            
+        except Exception as e:
+            print(f"\nError: {str(e)}")
+            mlflow.log_param("error", str(e))
+            import traceback
+            traceback.print_exc()
 
 
 if __name__ == "__main__":
