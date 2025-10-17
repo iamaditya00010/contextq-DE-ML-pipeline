@@ -89,6 +89,12 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
+    - name: Install Databricks CLI
+      run: |
+        echo "Installing Databricks CLI..."
+        pip install databricks-cli
+        databricks --version
+    
     - name: Deploy PySpark scripts to Databricks
       run: |
         echo "Deploying PySpark scripts to Databricks..."
