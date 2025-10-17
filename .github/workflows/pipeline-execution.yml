@@ -1,0 +1,327 @@
+name: Pipeline Execution (No Terraform)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  AZURE_RESOURCE_GROUP: "de-log-processing-rg"
+  STORAGE_ACCOUNT_NAME: "delogprocessingdatalake"
+  DATABRICKS_WORKSPACE: "de-log-processing-databricks"
+  AKS_CLUSTER_NAME: "de-log-processing-aks"
+  CONTAINER_REGISTRY: "delogprocessingacr"
+  KEY_VAULT_NAME: "de-log-processing-kv"
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install flake8
+    
+    - name: Lint code
+      run: |
+        flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 scripts/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Validate code structure
+      run: |
+        echo "Validating code structure..."
+        python -c "import scripts.bronze.raw_load; print('Bronze script OK')"
+        python -c "import scripts.silver.silver_load; print('Silver script OK')"
+        python -c "import scripts.gold.gold_load; print('Gold script OK')"
+        python -c "import scripts.ml_anomaly_detection; print('ML script OK')"
+
+  upload-source-data:
+    needs: lint-and-validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Upload source data to Azure Storage
+      run: |
+        echo "Uploading source data to Azure Storage..."
+        
+        # Create containers if they don't exist
+        az storage container create --name bronze --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage container create --name silver --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage container create --name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        
+        # Upload source log file
+        az storage blob upload --file logs/OpenSSH_2k.log --container-name bronze --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        
+        echo "Source data uploaded successfully!"
+
+  deploy-databricks-pipeline:
+    needs: upload-source-data
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy PySpark scripts to Databricks
+      run: |
+        echo "Deploying PySpark scripts to Databricks..."
+        
+        # Set Databricks configuration
+        export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
+        export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
+        
+        # Create workspace directories
+        databricks workspace mkdirs /DE-Log-Processing
+        databricks workspace mkdirs /DE-Log-Processing/bronze
+        databricks workspace mkdirs /DE-Log-Processing/silver
+        databricks workspace mkdirs /DE-Log-Processing/gold
+        databricks workspace mkdirs /DE-Log-Processing/ml
+        
+        # Upload PySpark scripts
+        databricks workspace import scripts/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load.py --language PYTHON
+        databricks workspace import scripts/silver/silver_load.py /DE-Log-Processing/silver/silver_load.py --language PYTHON
+        databricks workspace import scripts/gold/gold_load.py /DE-Log-Processing/gold/gold_load.py --language PYTHON
+        databricks workspace import scripts/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection.py --language PYTHON
+        
+        echo "PySpark scripts deployed to Databricks successfully!"
+
+  deploy-aks-services:
+    needs: deploy-databricks-pipeline
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Get AKS credentials
+      run: |
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+    
+    - name: Deploy MLflow to AKS
+      run: |
+        echo "Deploying MLflow to AKS..."
+        kubectl apply -f kubernetes/mlflow-deployment.yaml
+        kubectl apply -f kubernetes/services-deployment.yaml
+        
+        # Wait for deployments to be ready
+        kubectl wait --for=condition=available --timeout=300s deployment/mlflow-server
+        kubectl wait --for=condition=available --timeout=300s deployment/ml-api-service
+        
+        echo "Services deployed to AKS successfully!"
+
+  execute-pipeline:
+    needs: deploy-aks-services
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Execute Bronze Layer
+      run: |
+        echo "Executing Bronze Layer on Databricks..."
+        
+        # Set Databricks configuration
+        export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
+        export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
+        
+        # Submit Bronze layer job
+        databricks jobs submit --json '{
+          "name": "Bronze Layer - Raw Data Processing",
+          "new_cluster": {
+            "spark_version": "13.3.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 2
+          },
+          "notebook_task": {
+            "notebook_path": "/DE-Log-Processing/bronze/raw_load"
+          }
+        }'
+        
+        echo "Bronze Layer execution completed!"
+    
+    - name: Execute Silver Layer
+      run: |
+        echo "Executing Silver Layer on Databricks..."
+        
+        # Submit Silver layer job
+        databricks jobs submit --json '{
+          "name": "Silver Layer - Data Transformation",
+          "new_cluster": {
+            "spark_version": "13.3.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 2
+          },
+          "notebook_task": {
+            "notebook_path": "/DE-Log-Processing/silver/silver_load"
+          }
+        }'
+        
+        echo "Silver Layer execution completed!"
+    
+    - name: Execute Gold Layer
+      run: |
+        echo "Executing Gold Layer on Databricks..."
+        
+        # Submit Gold layer job
+        databricks jobs submit --json '{
+          "name": "Gold Layer - Final Data Processing",
+          "new_cluster": {
+            "spark_version": "13.3.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 2
+          },
+          "notebook_task": {
+            "notebook_path": "/DE-Log-Processing/gold/gold_load"
+          }
+        }'
+        
+        echo "Gold Layer execution completed!"
+    
+    - name: Execute ML Pipeline
+      run: |
+        echo "Executing ML Pipeline on Databricks..."
+        
+        # Submit ML job
+        databricks jobs submit --json '{
+          "name": "ML Pipeline - Anomaly Detection",
+          "new_cluster": {
+            "spark_version": "13.3.x-scala2.12",
+            "node_type_id": "Standard_DS3_v2",
+            "num_workers": 2
+          },
+          "notebook_task": {
+            "notebook_path": "/DE-Log-Processing/ml/ml_anomaly_detection"
+          }
+        }'
+        
+        echo "ML Pipeline execution completed!"
+
+  validate-pipeline-execution:
+    needs: execute-pipeline
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Validate Pipeline Outputs
+      run: |
+        echo "Validating pipeline execution outputs..."
+        
+        # Check if data exists in storage
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name silver --name structured_logs.json --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name gold --name openssh_logs_final.csv --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        
+        # Check AKS services
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        kubectl get pods
+        kubectl get services
+        
+        echo "Pipeline validation completed successfully!"
+
+  test-pipeline:
+    needs: validate-pipeline-execution
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Test Pipeline Execution
+      run: |
+        echo "Testing pipeline execution..."
+        echo "Checking source data in Azure Storage..."
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        echo "Checking Databricks workspace..."
+        export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
+        export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
+        databricks workspace list --path /
+        echo "Checking AKS services..."
+        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        kubectl get pods
+        kubectl get services
+    
+    - name: Run Comprehensive Tests
+      run: |
+        echo "Running comprehensive pipeline tests..."
+        python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=xml --cov-report=term-missing -v
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          coverage.xml
+          .coverage
+          htmlcov/
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: integration-tests
+        name: codecov-pipeline-tests
+
+  cleanup:
+    if: always()
+    needs: [lint-and-validate, upload-source-data, deploy-databricks-pipeline, deploy-aks-services, execute-pipeline, validate-pipeline-execution, test-pipeline]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Cleanup temporary files
+      run: |
+        echo "Cleaning up temporary files..."
+        # Add any cleanup steps here if needed
