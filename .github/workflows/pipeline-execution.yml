@@ -58,19 +58,23 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
-    - name: Upload source data to Azure Storage
+    - name: Check if source data exists and upload if needed
       run: |
-        echo "Uploading source data to Azure Storage..."
+        echo "Checking if source data already exists in Azure Storage..."
         
         # Create containers if they don't exist
-        az storage container create --name bronze --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
-        az storage container create --name silver --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
-        az storage container create --name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage container create --name bronze --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode login
+        az storage container create --name silver --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode login
+        az storage container create --name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode login
         
-        # Upload source log file
-        az storage blob upload --file logs/OpenSSH_2k.log --container-name bronze --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
-        
-        echo "Source data uploaded successfully!"
+        # Check if source data already exists
+        if az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode login | grep -q "true"; then
+          echo "✅ Source data already exists in Azure Storage - skipping upload"
+        else
+          echo "📤 Uploading source data to Azure Storage..."
+          az storage blob upload --file logs/OpenSSH_2k.log --container-name bronze --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode login
+          echo "✅ Source data uploaded successfully!"
+        fi
 
   deploy-databricks-pipeline:
     needs: upload-source-data
@@ -248,9 +252,9 @@ jobs:
         echo "Validating pipeline execution outputs..."
         
         # Check if data exists in storage
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name silver --name structured_logs.json --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name gold --name openssh_logs_final.csv --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode login
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name silver --name structured_logs.json --auth-mode login
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name gold --name openssh_logs_final.csv --auth-mode login
         
         # Check AKS services
         az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
@@ -285,7 +289,7 @@ jobs:
       run: |
         echo "Testing pipeline execution..."
         echo "Checking source data in Azure Storage..."
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name bronze --name raw_logs/OpenSSH_2k.log --auth-mode login
         echo "Checking Databricks workspace..."
         export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
