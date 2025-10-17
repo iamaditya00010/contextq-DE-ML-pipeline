@@ -329,10 +329,12 @@ scrape_configs:
 
 ### Access URLs
 
-- **Prometheus**: http://52.249.210.79:9090
-- **Grafana**: http://4.156.146.36:3000
+- **Prometheus**: `http://<your-prometheus-external-ip>:9090`
+- **Grafana**: `http://<your-grafana-external-ip>:3000`
   - Username: admin
-  - Password: admin123
+  - Password: admin123 (change in production)
+
+**Security Note**: Replace `<your-*-external-ip>` with your actual Kubernetes service external IPs. These URLs are examples and should be configured based on your deployment. Change default passwords in production environments.
 
 ### Port Forwarding (Local Access)
 
@@ -738,10 +740,12 @@ scrape_configs:
 
 ### Access URLs
 
-- **Prometheus**: http://52.249.210.79:9090
-- **Grafana**: http://4.156.146.36:3000
+- **Prometheus**: `http://<your-prometheus-external-ip>:9090`
+- **Grafana**: `http://<your-grafana-external-ip>:3000`
   - Username: admin
-  - Password: admin123
+  - Password: admin123 (change in production)
+
+**Security Note**: Replace `<your-*-external-ip>` with your actual Kubernetes service external IPs. These URLs are examples and should be configured based on your deployment. Change default passwords in production environments.
 
 ### Port Forwarding (Local Access)
 

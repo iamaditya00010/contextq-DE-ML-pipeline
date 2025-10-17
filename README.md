@@ -250,10 +250,12 @@ Raw Logs → Metrics Exporter → Prometheus → Grafana Dashboard
 
 ### Access Information
 
-- **Grafana Dashboard**: http://4.156.146.36:3000
+- **Grafana Dashboard**: `http://<your-grafana-external-ip>:3000`
   - Username: `admin`
-  - Password: `admin123`
-- **Prometheus**: http://52.249.210.79:9090
+  - Password: `admin123` (change in production)
+- **Prometheus**: `http://<your-prometheus-external-ip>:9090`
+
+**Note**: Replace `<your-*-external-ip>` with your actual Kubernetes service external IPs. These URLs are examples and should be configured based on your deployment.
 
 ### Implementation Details
 
