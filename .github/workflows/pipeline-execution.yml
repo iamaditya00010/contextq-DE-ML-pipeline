@@ -123,17 +123,17 @@ jobs:
         # Robust script deployment - try to create, continue if exists
         echo "Deploying scripts (robust approach)..."
         
-        echo "Deploying Bronze script..."
-        databricks workspace import scripts/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load.py --language PYTHON || echo "✅ Bronze script already exists"
+        echo "Deploying Bronze notebook..."
+        databricks workspace import notebooks/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load --language PYTHON || echo "✅ Bronze notebook already exists"
         
-        echo "Deploying Silver script..."
-        databricks workspace import scripts/silver/silver_load.py /DE-Log-Processing/silver/silver_load.py --language PYTHON || echo "✅ Silver script already exists"
+        echo "Deploying Silver notebook..."
+        databricks workspace import notebooks/silver/silver_load.py /DE-Log-Processing/silver/silver_load --language PYTHON || echo "✅ Silver notebook already exists"
         
-        echo "Deploying Gold script..."
-        databricks workspace import scripts/gold/gold_load.py /DE-Log-Processing/gold/gold_load.py --language PYTHON || echo "✅ Gold script already exists"
+        echo "Deploying Gold notebook..."
+        databricks workspace import notebooks/gold/gold_load.py /DE-Log-Processing/gold/gold_load --language PYTHON || echo "✅ Gold notebook already exists"
         
-        echo "Deploying ML script..."
-        databricks workspace import scripts/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection.py --language PYTHON || echo "✅ ML script already exists"
+        echo "Deploying ML notebook..."
+        databricks workspace import notebooks/ml/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection --language PYTHON || echo "✅ ML notebook already exists"
         
         echo "✅ PySpark scripts deployment completed (robust approach - existing resources preserved)!"
 
