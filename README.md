@@ -248,15 +248,6 @@ Raw Logs → Metrics Exporter → Prometheus → Grafana Dashboard
 - **Historical Data**: 1-hour time range with configurable periods
 - **Real-time Queries**: Direct Prometheus integration
 
-### Access Information
-
-- **Grafana Dashboard**: `http://<your-grafana-external-ip>:3000`
-  - Username: `admin`
-  - Password: `admin123` (change in production)
-- **Prometheus**: `http://<your-prometheus-external-ip>:9090`
-
-**Note**: Replace `<your-*-external-ip>` with your actual Kubernetes service external IPs. These URLs are examples and should be configured based on your deployment.
-
 ### Implementation Details
 
 The observability stack is deployed using Kubernetes manifests:
