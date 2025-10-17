@@ -107,20 +107,55 @@ jobs:
         export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
         
-        # Create workspace directories
-        databricks workspace mkdirs /DE-Log-Processing
-        databricks workspace mkdirs /DE-Log-Processing/bronze
-        databricks workspace mkdirs /DE-Log-Processing/silver
-        databricks workspace mkdirs /DE-Log-Processing/gold
-        databricks workspace mkdirs /DE-Log-Processing/ml
+        # Check if workspace directory exists, create if not
+        echo "Checking if workspace directory exists..."
+        if ! databricks workspace list --path /DE-Log-Processing 2>/dev/null; then
+          echo "Creating workspace directories..."
+          databricks workspace mkdirs /DE-Log-Processing
+          databricks workspace mkdirs /DE-Log-Processing/bronze
+          databricks workspace mkdirs /DE-Log-Processing/silver
+          databricks workspace mkdirs /DE-Log-Processing/gold
+          databricks workspace mkdirs /DE-Log-Processing/ml
+        else
+          echo "✅ Workspace directory already exists"
+        fi
         
-        # Upload PySpark scripts
-        databricks workspace import scripts/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load.py --language PYTHON
-        databricks workspace import scripts/silver/silver_load.py /DE-Log-Processing/silver/silver_load.py --language PYTHON
-        databricks workspace import scripts/gold/gold_load.py /DE-Log-Processing/gold/gold_load.py --language PYTHON
-        databricks workspace import scripts/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection.py --language PYTHON
+        # Check and upload scripts only if they don't exist
+        echo "Checking if scripts exist..."
         
-        echo "PySpark scripts deployed to Databricks successfully!"
+        # Bronze script
+        if ! databricks workspace list --path /DE-Log-Processing/bronze/raw_load.py 2>/dev/null; then
+          echo "Uploading Bronze script..."
+          databricks workspace import scripts/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load.py --language PYTHON
+        else
+          echo "✅ Bronze script already exists"
+        fi
+        
+        # Silver script
+        if ! databricks workspace list --path /DE-Log-Processing/silver/silver_load.py 2>/dev/null; then
+          echo "Uploading Silver script..."
+          databricks workspace import scripts/silver/silver_load.py /DE-Log-Processing/silver/silver_load.py --language PYTHON
+        else
+          echo "✅ Silver script already exists"
+        fi
+        
+        # Gold script
+        if ! databricks workspace list --path /DE-Log-Processing/gold/gold_load.py 2>/dev/null; then
+          echo "Uploading Gold script..."
+          databricks workspace import scripts/gold/gold_load.py /DE-Log-Processing/gold/gold_load.py --language PYTHON
+        else
+          echo "✅ Gold script already exists"
+        fi
+        
+        # ML script
+        if ! databricks workspace list --path /DE-Log-Processing/ml/ml_anomaly_detection.py 2>/dev/null; then
+          echo "Uploading ML script..."
+          databricks workspace import scripts/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection.py --language PYTHON
+        else
+          echo "✅ ML script already exists"
+        fi
+        
+        echo "✅ PySpark scripts deployment completed (existing scripts preserved)!"
 
   deploy-aks-services:
     needs: deploy-databricks-pipeline
