@@ -57,10 +57,10 @@ data:
         metrics_path: '/metrics'
         scrape_interval: 30s
       
-      # Scrape pipeline metrics
-      - job_name: 'pipeline-metrics'
+      # Scrape pipeline metrics exporter (static target)
+      - job_name: 'pipeline-metrics-exporter'
         static_configs:
-          - targets: ['pytest-pod:8080']
+          - targets: ['pipeline-metrics-service:8080']
         metrics_path: '/metrics'
         scrape_interval: 15s
 ---

@@ -200,7 +200,77 @@ LineId,datetime,EventId,is_anomaly,anomaly_score
 
 ---
 
-## Testing
+## Observability & Monitoring
+
+This project implements a comprehensive observability stack that monitors the entire data pipeline from raw logs to final ML predictions.
+
+### Monitoring Architecture
+
+The observability implementation follows this flow:
+
+```
+Raw Logs → Metrics Exporter → Prometheus → Grafana Dashboard
+```
+
+### Components
+
+1. **Metrics Exporter** (`pipeline-metrics-exporter`)
+   - Collects pipeline execution metrics
+   - Exposes metrics in Prometheus format on port 8080
+   - Tracks Bronze, Silver, Gold, and ML layer performance
+   - Monitors data processing rates and ML model predictions
+
+2. **Prometheus Server**
+   - Time-series database for metrics storage
+   - Scrapes metrics from the exporter every 15 seconds
+   - Provides query API for data retrieval
+   - Accessible at: http://52.249.210.79:9090
+
+3. **Grafana Dashboard**
+   - Real-time visualization of pipeline metrics
+   - Multiple panel types: stat panels, time series, pie charts, gauges
+   - Manual refresh mode (no auto-refresh to prevent continuous updates)
+   - Accessible at: http://4.156.146.36:3000
+
+### Key Metrics Tracked
+
+- **Pipeline Executions**: Success/failure counts by layer
+- **Data Processing**: Record counts and processing rates
+- **ML Model Performance**: Anomaly detection accuracy and prediction counts
+- **System Health**: Active pipelines and error rates
+- **Performance**: Execution duration by layer
+
+### Dashboard Features
+
+- **Static Metrics**: Values remain constant until manually refreshed
+- **Multi-panel Views**: Comprehensive pipeline overview
+- **Dark Theme**: Professional appearance
+- **Historical Data**: 1-hour time range with configurable periods
+- **Real-time Queries**: Direct Prometheus integration
+
+### Access Information
+
+- **Grafana Dashboard**: http://4.156.146.36:3000
+  - Username: `admin`
+  - Password: `admin123`
+- **Prometheus**: http://52.249.210.79:9090
+
+### Implementation Details
+
+The observability stack is deployed using Kubernetes manifests:
+
+- `kubernetes/prometheus-pod.yaml`: Prometheus server configuration
+- `kubernetes/pipeline-metrics-exporter.yaml`: Metrics collection service
+- `kubernetes/grafana-fixed.yaml`: Dashboard visualization
+- `scripts/metrics_exporter.py`: Python metrics collection script
+
+### Documentation
+
+For detailed observability implementation, configuration, and troubleshooting, see [OBSERVABILITY.md](OBSERVABILITY.md)
+
+---
+
+---
 
 ### Test Suite Overview
 - **Total Tests:** 11 comprehensive tests
