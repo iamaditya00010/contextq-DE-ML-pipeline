@@ -10,7 +10,7 @@ on:
 env:
   AZURE_RESOURCE_GROUP: "de-log-processing-rg"
   STORAGE_ACCOUNT_NAME: "delogprocessingdatalake"
-  DATABRICKS_WORKSPACE: "de-log-processing-databricks"
+  DATABRICKS_WORKSPACE: "adb-3683882154975704.4"
   AKS_CLUSTER_NAME: "de-log-processing-aks"
   CONTAINER_REGISTRY: "delogprocessingacr"
   KEY_VAULT_NAME: "de-log-processing-kv"
