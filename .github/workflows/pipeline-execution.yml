@@ -8,12 +8,16 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_RESOURCE_GROUP: "DE-Log-Processing-rg-dbf6d727"
-  STORAGE_ACCOUNT_NAME: "delogprocessingdatalakejs9d"
-  DATABRICKS_WORKSPACE: "adb-3683882154975704.4"
-  AKS_CLUSTER_NAME: "de-log-processing-aks-js9d"
+  # Resource Groups
+  MAIN_RESOURCE_GROUP: "de-log-processing-rg"
+  DATABRICKS_RESOURCE_GROUP: "DE-Log-Processing-rg-dbf6d727"
+  
+  # Resource Names
+  STORAGE_ACCOUNT_NAME: "delogprocessingdatalake"
+  DATABRICKS_WORKSPACE: "de-log-processing-databricks-js9d"
+  AKS_CLUSTER_NAME: "de-log-processing-aks"
   CONTAINER_REGISTRY: "delogprocessingacrjs9d"
-  KEY_VAULT_NAME: "de-log-processing-kv-js9d"
+  KEY_VAULT_NAME: "de-log-processing-kv"
 
 jobs:
   lint-and-validate:
@@ -133,7 +137,7 @@ jobs:
     
     - name: Get AKS credentials
       run: |
-        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
     
     - name: Deploy MVP Pods to AKS
       run: |
@@ -289,7 +293,7 @@ jobs:
         az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name gold --name openssh_logs_final.csv --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }}
         
         # Check AKS MVP pods
-        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
         
         echo "Checking MVP pods status..."
         kubectl get pods -l app=prometheus
@@ -342,7 +346,7 @@ jobs:
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
         databricks workspace list --path /
         echo "Checking AKS services..."
-        az aks get-credentials --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
+        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
         kubectl get pods
         kubectl get services
     
