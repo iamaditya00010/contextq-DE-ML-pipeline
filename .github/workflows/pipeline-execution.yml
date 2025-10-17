@@ -14,7 +14,7 @@ env:
   
   # Resource Names
   STORAGE_ACCOUNT_NAME: "delogprocessingdatalake"
-  DATABRICKS_WORKSPACE: "de-log-processing-databricks-js9d"
+  DATABRICKS_WORKSPACE: "adb-4365470537346742.2"
   AKS_CLUSTER_NAME: "de-log-processing-aks"
   CONTAINER_REGISTRY: "delogprocessingacrjs9d"
   KEY_VAULT_NAME: "de-log-processing-kv"
