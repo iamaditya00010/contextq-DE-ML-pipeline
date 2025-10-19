@@ -1,6 +1,6 @@
 # MVP Architecture: DE Log Processing & ML Pipeline with Anomaly Detection
 
-## 🎯 MVP Overview
+##  MVP Overview
 
 This project implements a **Minimum Viable Product (MVP)** for a full-stack data and AI pipeline using:
 
@@ -44,22 +44,22 @@ AKS Pods: Pytest ← Prometheus ← Grafana (Monitoring & Testing)
 
 ## 🚀 Key Features
 
-### ✅ Full ETL Pipeline
+### Full ETL Pipeline
 - **Extract**: Raw SSH logs from Azure Storage
 - **Transform**: Data cleansing, validation, and standardization
 - **Load**: Structured data into data lake layers
 
-### ✅ ML Pipeline
+### ML Pipeline
 - **Training**: Isolation Forest for anomaly detection
 - **Serving**: MLflow model registry and endpoints
 - **Monitoring**: Model performance tracking
 
-### ✅ Observability
+### Observability
 - **Metrics**: Prometheus collects pipeline metrics
 - **Visualization**: Grafana dashboard with key KPIs
 - **Testing**: Automated pytest validation
 
-### ✅ Cloud-Native
+### Cloud-Native
 - **Scalable**: PySpark on Databricks clusters
 - **Containerized**: Kubernetes pods for services
 - **Automated**: GitHub Actions CI/CD pipeline
@@ -98,24 +98,24 @@ The Grafana dashboard displays 3 key metrics:
 | **Testing** | pytest + pytest-cov |
 | **CI/CD** | GitHub Actions |
 
-## 🎯 MVP Benefits
+##  MVP Benefits
 
-### ✅ **Simple but Comprehensive**
+### **Simple but Comprehensive**
 - Focuses on core functionality
 - Easy to understand and maintain
 - Demonstrates full-stack capabilities
 
-### ✅ **Production-Ready**
+### **Production-Ready**
 - Proper monitoring and alerting
 - Automated testing and validation
 - Scalable cloud architecture
 
-### ✅ **Cost-Effective**
+### **Cost-Effective**
 - Uses managed services (Databricks, AKS)
 - Minimal infrastructure overhead
 - Pay-per-use model
 
-### ✅ **Future-Proof**
+### **Future-Proof**
 - Easy to scale and extend
 - Modern cloud-native patterns
 - Industry-standard tools

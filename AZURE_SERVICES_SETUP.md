@@ -7,9 +7,9 @@ This guide will walk you through creating all necessary Azure services for your 
 
 ## Prerequisites
 
-✅ **Azure Account:** You have a fresh Azure account  
-✅ **Subscription:** Active Azure subscription  
-✅ **Permissions:** Owner or Contributor access  
+**Azure Account:** You have a fresh Azure account  
+**Subscription:** Active Azure subscription  
+**Permissions:** Owner or Contributor access  
 
 ---
 
@@ -54,7 +54,7 @@ This guide will walk you through creating all necessary Azure services for your 
 
 3. **IMPORTANT - Enable ADLS Gen2:**
    - Go to "Advanced" tab
-   - ✅ Check "Enable hierarchical namespace"
+   - Check "Enable hierarchical namespace"
    - This converts it to ADLS Gen2
 
 4. **Click "Review + create" → "Create"**

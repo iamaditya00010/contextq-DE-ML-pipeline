@@ -36,23 +36,23 @@ python -m pytest tests/test_pipeline.py --cov=scripts --cov-report=term-missing 
 
 ## What Gets Tested
 
-✅ **Data Validation**
+**Data Validation**
 - Time format (HH:MM:SS)
 - PID validation (numeric, non-empty)
 - Month validation (Jan-Dec)
 
-✅ **File Operations**
+**File Operations**
 - Source log file exists
 - Data directories exist
 - Output files exist and not empty
 
-✅ **ML Model**
+**ML Model**
 - Trained model exists
 - Predictions have correct format
 - Anomaly scores are negative
 - Anomaly flags are binary (0/1)
 
-✅ **Data Quality**
+**Data Quality**
 - Gold layer CSV structure
 - Silver layer JSON format
 - Required columns present

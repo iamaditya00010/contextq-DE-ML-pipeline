@@ -55,7 +55,7 @@ def run_script(script_path, layer_name):
             check=True
         )
         
-        print(f"\n✅ {layer_name.upper()} layer completed successfully")
+        print(f"\n{layer_name.upper()} layer completed successfully")
         print(f"End: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         return True
         
@@ -147,7 +147,7 @@ def main():
     print(f"Start Time:    {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"End Time:      {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Duration:      {duration}")
-    print(f"Status:        {'✅ SUCCESS' if success else '❌ FAILED'}")
+    print(f"Status:        {'SUCCESS' if success else '❌ FAILED'}")
     print("=" * 80)
     
     if success:

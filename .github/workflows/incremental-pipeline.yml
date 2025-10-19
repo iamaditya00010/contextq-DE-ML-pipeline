@@ -97,9 +97,9 @@ jobs:
           --account-name ${{ env.STORAGE_ACCOUNT_NAME }} \
           --auth-mode key \
           --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} \
-          --overwrite false || echo "✅ Incremental upload completed"
+          --overwrite false || echo "Incremental upload completed"
         
-        echo "✅ New data uploaded incrementally!"
+        echo "New data uploaded incrementally!"
     
     - name: Process incremental data on Databricks
       run: |
@@ -133,7 +133,7 @@ jobs:
               "value": "${{ needs.check-for-new-data.outputs.data_file }}"
             }
           ]
-        }' | jq -r '.job_id') || echo "✅ Incremental job already exists"
+        }' | jq -r '.job_id') || echo "Incremental job already exists"
         
         if [ ! -z "$JOB_ID" ] && [ "$JOB_ID" != "null" ]; then
           echo "Running incremental processing job ID: $JOB_ID"
@@ -142,10 +142,10 @@ jobs:
           
           # Wait for job completion
           echo "Waiting for incremental processing to complete..."
-          databricks runs wait --run-id $RUN_ID || echo "✅ Incremental processing completed"
+          databricks runs wait --run-id $RUN_ID || echo "Incremental processing completed"
         fi
         
-        echo "✅ Incremental data processing completed!"
+        echo "Incremental data processing completed!"
 
   validate-incremental-results:
     needs: incremental-process
@@ -172,10 +172,10 @@ jobs:
           --container-name "bronze-incremental" \
           --name "incremental/$TIMESTAMP/*" \
           --auth-mode key \
-          --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Incremental bronze data check completed"
+          --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Incremental bronze data check completed"
         
-        echo "✅ Incremental processing validation completed!"
-        echo "🎯 Incremental pipeline executed successfully!"
+        echo "Incremental processing validation completed!"
+        echo " Incremental pipeline executed successfully!"
         echo "📊 Only new data was processed (efficient approach)"
         echo "⏱️ Execution time: ~2-3 minutes (vs 8-10 minutes for full pipeline)"
 
@@ -186,7 +186,7 @@ jobs:
     steps:
     - name: Skip processing
       run: |
-        echo "✅ No new data detected - skipping pipeline execution"
+        echo "No new data detected - skipping pipeline execution"
         echo "💡 This saves time and resources!"
         echo "📊 To process new data:"
         echo "   1. Add new log files to logs/ directory"

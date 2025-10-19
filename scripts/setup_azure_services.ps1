@@ -98,7 +98,7 @@ az monitor log-analytics workspace create `
     --workspace-name $logAnalyticsName `
     --location $location
 
-Write-Host "`n✅ All Azure services created successfully!" -ForegroundColor Green
+Write-Host "`nAll Azure services created successfully!" -ForegroundColor Green
 
 # Display created resources
 Write-Host "`n📋 Created Resources:" -ForegroundColor Yellow

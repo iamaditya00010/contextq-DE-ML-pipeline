@@ -1,6 +1,6 @@
 # Executive Summary - Azure Data & AI Pipeline
 
-## 🎯 Project Overview
+##  Project Overview
 
 This solution implements a **production-ready, enterprise-grade ETL and ML pipeline** on Azure, fulfilling all requirements of the Data & AI Engineering assignment.
 
@@ -9,10 +9,10 @@ This solution implements a **production-ready, enterprise-grade ETL and ML pipel
 ## ✨ Key Highlights
 
 ### 1. **Complete Azure Native Solution**
-- ✅ Fully managed services (no server management overhead)
-- ✅ Scalable from 10K to 10M+ records
-- ✅ Cost-optimized with auto-scaling
-- ✅ Enterprise security (Private Endpoints, RBAC, Key Vault)
+- Fully managed services (no server management overhead)
+- Scalable from 10K to 10M+ records
+- Cost-optimized with auto-scaling
+- Enterprise security (Private Endpoints, RBAC, Key Vault)
 
 ### 2. **Modern Data Architecture (Medallion)**
 ```
@@ -124,27 +124,27 @@ Bronze (Raw) → Silver (Cleaned) → Gold (Curated)
 
 ---
 
-## 🏆 Assignment Requirements Coverage
+## Assignment Requirements Coverage
 
-### ✅ Core Requirements
+### Core Requirements
 
 | Requirement | Implementation | Status |
 |------------|----------------|--------|
-| **ETL - Extract** | PySpark reads compressed CSV/JSON from ADLS Gen2 Bronze | ✅ Complete |
-| **ETL - Transform** | Cleansing, validation, schema checks, derived columns | ✅ Complete |
-| **ETL - Validate** | Reject null user_id, invalid timestamps, schema validation | ✅ Complete |
-| **ETL - Load** | Write to Silver as Parquet/Delta Lake (partitioned) | ✅ Complete |
-| **ETL - Lineage** | Delta Lake history tracking | ✅ Complete |
-| **ML - Feature Engineering** | VectorAssembler, StringIndexer, StandardScaler | ✅ Complete |
-| **ML - Model Training** | Logistic Regression with Spark MLlib | ✅ Complete |
-| **ML - Pipeline** | Complete ML Pipeline with chained transformations | ✅ Complete |
-| **ML - Model Registry** | MLflow tracking and model registration | ✅ Complete |
-| **Orchestration** | Azure Data Factory with scheduled trigger | ✅ Complete |
-| **Scheduling** | Daily automated runs at 2 AM UTC | ✅ Complete |
-| **CI - Unit Tests** | pytest with transformation logic tests | ✅ Complete |
-| **CI - Data Validation** | Schema validation tests | ✅ Complete |
-| **CD - Deployment** | Auto-deploy on merge to main | ✅ Complete |
-| **IaC - Terraform** | Complete infrastructure as code | ✅ Complete |
+| **ETL - Extract** | PySpark reads compressed CSV/JSON from ADLS Gen2 Bronze | Complete |
+| **ETL - Transform** | Cleansing, validation, schema checks, derived columns | Complete |
+| **ETL - Validate** | Reject null user_id, invalid timestamps, schema validation | Complete |
+| **ETL - Load** | Write to Silver as Parquet/Delta Lake (partitioned) | Complete |
+| **ETL - Lineage** | Delta Lake history tracking | Complete |
+| **ML - Feature Engineering** | VectorAssembler, StringIndexer, StandardScaler | Complete |
+| **ML - Model Training** | Logistic Regression with Spark MLlib | Complete |
+| **ML - Pipeline** | Complete ML Pipeline with chained transformations | Complete |
+| **ML - Model Registry** | MLflow tracking and model registration | Complete |
+| **Orchestration** | Azure Data Factory with scheduled trigger | Complete |
+| **Scheduling** | Daily automated runs at 2 AM UTC | Complete |
+| **CI - Unit Tests** | pytest with transformation logic tests | Complete |
+| **CI - Data Validation** | Schema validation tests | Complete |
+| **CD - Deployment** | Auto-deploy on merge to main | Complete |
+| **IaC - Terraform** | Complete infrastructure as code | Complete |
 
 ### 🎁 Bonus Features Implemented
 
@@ -165,30 +165,30 @@ Bronze (Raw) → Silver (Cleaned) → Gold (Curated)
 ### Security Layers
 
 1. **Network Security**
-   - ✅ Private Endpoints for all PaaS services
-   - ✅ NSGs with least-privilege rules
-   - ✅ No public internet exposure
+   - Private Endpoints for all PaaS services
+   - NSGs with least-privilege rules
+   - No public internet exposure
 
 2. **Identity & Access**
-   - ✅ Managed Identities (no credentials in code)
-   - ✅ Azure AD authentication
-   - ✅ RBAC with least privilege
+   - Managed Identities (no credentials in code)
+   - Azure AD authentication
+   - RBAC with least privilege
 
 3. **Data Protection**
-   - ✅ Encryption at rest (Azure Storage)
-   - ✅ Encryption in transit (TLS 1.2+)
-   - ✅ Data versioning (Delta Lake)
+   - Encryption at rest (Azure Storage)
+   - Encryption in transit (TLS 1.2+)
+   - Data versioning (Delta Lake)
 
 4. **Secrets Management**
-   - ✅ Azure Key Vault for all secrets
-   - ✅ No hardcoded credentials
-   - ✅ Automatic secret rotation
+   - Azure Key Vault for all secrets
+   - No hardcoded credentials
+   - Automatic secret rotation
 
 ### Compliance Features
-- ✅ Audit logging (Azure Monitor)
-- ✅ Data lineage (Delta Lake history)
-- ✅ Access logs for all services
-- ✅ GDPR-ready (data deletion support)
+- Audit logging (Azure Monitor)
+- Data lineage (Delta Lake history)
+- Access logs for all services
+- GDPR-ready (data deletion support)
 
 ---
 
@@ -231,9 +231,9 @@ Bronze (Raw) → Silver (Cleaned) → Gold (Curated)
 ## 📈 Scalability & Future Enhancements
 
 ### Current Capabilities
-- ✅ Handles 10M+ rows daily
-- ✅ Auto-scales based on workload
-- ✅ Multi-region support ready
+- Handles 10M+ rows daily
+- Auto-scales based on workload
+- Multi-region support ready
 
 ### Potential Enhancements
 
@@ -385,7 +385,7 @@ By implementing this solution, you'll gain hands-on experience with:
 
 ---
 
-## ✅ Final Checklist
+## Final Checklist
 
 Before submission, ensure:
 
@@ -410,12 +410,12 @@ Before submission, ensure:
 
 This solution provides a **production-ready, enterprise-grade** implementation that:
 
-✅ **Meets all assignment requirements**  
-✅ **Follows Azure best practices**  
-✅ **Implements security by default**  
-✅ **Scales efficiently**  
-✅ **Optimizes costs**  
-✅ **Provides comprehensive documentation**
+**Meets all assignment requirements**  
+**Follows Azure best practices**  
+**Implements security by default**  
+**Scales efficiently**  
+**Optimizes costs**  
+**Provides comprehensive documentation**
 
 **You're ready to build an impressive Data & AI Engineering portfolio project!** 🚀
 

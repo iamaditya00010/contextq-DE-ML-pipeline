@@ -879,60 +879,60 @@ data-ai-pipeline/
 ## 🚀 Implementation Roadmap
 
 ### Phase 1: Infrastructure Setup (Week 1)
-1. ✅ Set up Azure subscription and resource groups
-2. ✅ Configure Terraform backend (Azure Storage for state)
-3. ✅ Deploy base infrastructure (VNet, ADLS Gen2, Key Vault)
-4. ✅ Deploy Azure Databricks workspace
-5. ✅ Configure networking (Private Endpoints, NSGs)
+1. Set up Azure subscription and resource groups
+2. Configure Terraform backend (Azure Storage for state)
+3. Deploy base infrastructure (VNet, ADLS Gen2, Key Vault)
+4. Deploy Azure Databricks workspace
+5. Configure networking (Private Endpoints, NSGs)
 
 ### Phase 2: ETL Pipeline Development (Week 2)
-1. ✅ Generate sample log data using AI (ChatGPT/Claude)
-2. ✅ Develop PySpark ETL script
+1. Generate sample log data using AI (ChatGPT/Claude)
+2. Develop PySpark ETL script
    - Extract from ADLS Gen2
    - Transform with cleansing and validation
    - Load to Parquet/Delta Lake format
-3. ✅ Implement data lineage tracking (Delta Lake history)
-4. ✅ Write unit tests for transformations
-5. ✅ Test locally with PySpark
+3. Implement data lineage tracking (Delta Lake history)
+4. Write unit tests for transformations
+5. Test locally with PySpark
 
 ### Phase 3: ML Pipeline Development (Week 2)
-1. ✅ Design feature engineering logic
-2. ✅ Build Spark ML Pipeline (VectorAssembler + Model)
-3. ✅ Integrate MLflow for experiment tracking
-4. ✅ Train and evaluate model
-5. ✅ Write unit tests for ML pipeline
-6. ✅ Save model artifacts to ADLS Gen2
+1. Design feature engineering logic
+2. Build Spark ML Pipeline (VectorAssembler + Model)
+3. Integrate MLflow for experiment tracking
+4. Train and evaluate model
+5. Write unit tests for ML pipeline
+6. Save model artifacts to ADLS Gen2
 
 ### Phase 4: Orchestration Setup (Week 3)
-1. ✅ Deploy Azure Data Factory
-2. ✅ Create ADF pipeline with activities:
+1. Deploy Azure Data Factory
+2. Create ADF pipeline with activities:
    - ETL Databricks job
    - ML training Databricks job
    - Data quality check
-3. ✅ Configure scheduling trigger (daily)
-4. ✅ Test end-to-end pipeline execution
+3. Configure scheduling trigger (daily)
+4. Test end-to-end pipeline execution
 
 ### Phase 5: MLflow Deployment (Week 3)
-1. ✅ Deploy AKS cluster
-2. ✅ Set up Azure Database for PostgreSQL (MLflow backend)
-3. ✅ Deploy MLflow using Helm chart
-4. ✅ Configure artifact storage (ADLS Gen2)
-5. ✅ Test model registration and retrieval
+1. Deploy AKS cluster
+2. Set up Azure Database for PostgreSQL (MLflow backend)
+3. Deploy MLflow using Helm chart
+4. Configure artifact storage (ADLS Gen2)
+5. Test model registration and retrieval
 
 ### Phase 6: CI/CD Pipeline (Week 4)
-1. ✅ Set up GitHub repository
-2. ✅ Create GitHub Actions workflow
+1. Set up GitHub repository
+2. Create GitHub Actions workflow
    - CI: Run pytest, linting
    - CD: Deploy Terraform, upload scripts, deploy ADF pipeline
-3. ✅ Configure Azure service principal for authentication
-4. ✅ Test CI/CD pipeline with feature branch
+3. Configure Azure service principal for authentication
+4. Test CI/CD pipeline with feature branch
 
 ### Phase 7: Testing & Documentation (Week 4)
-1. ✅ Write comprehensive README.md
-2. ✅ Document architecture and design decisions
-3. ✅ Create setup and deployment instructions
-4. ✅ Add monitoring and alerting dashboards
-5. ✅ Final end-to-end testing
+1. Write comprehensive README.md
+2. Document architecture and design decisions
+3. Create setup and deployment instructions
+4. Add monitoring and alerting dashboards
+5. Final end-to-end testing
 
 ---
 
@@ -1019,20 +1019,20 @@ data-ai-pipeline/
 
 ---
 
-## ✅ Success Criteria
+## Success Criteria
 
-- ✅ ETL pipeline successfully processes raw data and outputs to Silver layer
-- ✅ ML model trains successfully and is registered in MLflow
-- ✅ All unit tests pass with >80% code coverage
-- ✅ CI/CD pipeline deploys infrastructure and code automatically
-- ✅ Pipeline executes on schedule without manual intervention
-- ✅ Data lineage is traceable
-- ✅ All resources deployed via Terraform (IaC)
-- ✅ Comprehensive documentation provided
+- ETL pipeline successfully processes raw data and outputs to Silver layer
+- ML model trains successfully and is registered in MLflow
+- All unit tests pass with >80% code coverage
+- CI/CD pipeline deploys infrastructure and code automatically
+- Pipeline executes on schedule without manual intervention
+- Data lineage is traceable
+- All resources deployed via Terraform (IaC)
+- Comprehensive documentation provided
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Review this plan** and confirm alignment with assignment requirements
 2. **Set up Azure account** and obtain necessary credentials

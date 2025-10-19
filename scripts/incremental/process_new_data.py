@@ -60,7 +60,7 @@ new_data_df.write \
     .mode("append") \
     .parquet(bronze_output_path)
 
-print(f"✅ Bronze layer updated with new data: {bronze_output_path}")
+print(f"Bronze layer updated with new data: {bronze_output_path}")
 
 # COMMAND ----------
 
@@ -103,7 +103,7 @@ new_structured_df.write \
     .mode("append") \
     .json(silver_output_path)
 
-print(f"✅ Silver layer updated with new data: {silver_output_path}")
+print(f"Silver layer updated with new data: {silver_output_path}")
 
 # COMMAND ----------
 
@@ -152,7 +152,7 @@ new_gold_df.write \
     .option("header", "true") \
     .csv(gold_output_path)
 
-print(f"✅ Gold layer updated with new data: {gold_output_path}")
+print(f"Gold layer updated with new data: {gold_output_path}")
 
 # COMMAND ----------
 
@@ -168,7 +168,7 @@ try:
     # Load existing model (this would need to be implemented with proper model loading)
     print("Loading existing ML model for incremental update...")
     # model = load_model(model_path)
-    print("✅ Existing model loaded for incremental update")
+    print("Existing model loaded for incremental update")
 except:
     print("No existing model found - will train new model")
 
@@ -188,7 +188,7 @@ ml_features_df.write \
     .option("header", "true") \
     .csv(ml_output_path)
 
-print(f"✅ ML features updated with new data: {ml_output_path}")
+print(f"ML features updated with new data: {ml_output_path}")
 
 # COMMAND ----------
 
@@ -230,6 +230,6 @@ spark.createDataFrame([summary]).write \
     .mode("overwrite") \
     .json(summary_path)
 
-print("✅ Incremental processing completed successfully!")
-print("🎯 Only new data was processed (efficient approach)")
+print("Incremental processing completed successfully!")
+print(" Only new data was processed (efficient approach)")
 print("⏱️ Processing time: ~2-3 minutes (vs 8-10 minutes for full pipeline)")

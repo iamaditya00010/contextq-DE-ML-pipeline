@@ -24,10 +24,10 @@ This document provides a comprehensive overview of the testing strategy, impleme
 ### Testing Philosophy
 Our testing approach focuses on **integration testing** and **data validation** rather than unit testing individual functions. This approach is ideal for data pipelines because:
 
-- ✅ **Validates actual pipeline outputs**
-- ✅ **Ensures data quality and integrity**
-- ✅ **Verifies ML model functionality**
-- ✅ **Production-ready validation**
+- **Validates actual pipeline outputs**
+- **Ensures data quality and integrity**
+- **Verifies ML model functionality**
+- **Production-ready validation**
 
 ### Testing Tools
 - **Framework:** pytest 7.4.4
@@ -267,7 +267,7 @@ pytest.ini                     # Pytest configuration
 
 ## What's Tested vs What's Not
 
-### ✅ What's Tested (Integration Testing)
+### What's Tested (Integration Testing)
 
 **Data Validation:**
 - Time format validation (HH:MM:SS)
@@ -364,7 +364,7 @@ def test_invalid_log_format():
 
 ---
 
-## 🎯 Testing Strategy Summary
+##  Testing Strategy Summary
 
 ### Current Approach: Integration Testing ✅
 - **Focus:** Data validation and output verification

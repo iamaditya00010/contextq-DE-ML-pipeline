@@ -230,7 +230,7 @@ def main():
     
     print()
     print("=" * 60)
-    print("✅ Log file generation complete!")
+    print("Log file generation complete!")
     print("=" * 60)
     print()
     print("Files created:")

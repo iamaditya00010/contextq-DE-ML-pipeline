@@ -75,15 +75,15 @@ jobs:
         
         # Robust container creation with timestamp naming
         echo "Creating containers (robust approach with timestamp)..."
-        az storage container create --name "bronze-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Bronze container already exists"
-        az storage container create --name "silver-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Silver container already exists"
-        az storage container create --name "gold-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Gold container already exists"
+        az storage container create --name "bronze-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Bronze container already exists"
+        az storage container create --name "silver-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Silver container already exists"
+        az storage container create --name "gold-$TIMESTAMP" --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Gold container already exists"
         
         # Robust blob upload - try to upload, continue if exists
         echo "Uploading source data (robust approach)..."
-        az storage blob upload --file logs/OpenSSH_2k.log --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Source data already exists"
+        az storage blob upload --file logs/OpenSSH_2k.log --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Source data already exists"
         
-        echo "✅ Source data management completed (robust approach with timestamp: $TIMESTAMP)!"
+        echo "Source data management completed (robust approach with timestamp: $TIMESTAMP)!"
 
   deploy-databricks-pipeline:
     needs: upload-source-data
@@ -114,28 +114,28 @@ jobs:
         
         # Robust workspace directory creation
         echo "Creating workspace directories (robust approach)..."
-        databricks workspace mkdirs /DE-Log-Processing || echo "✅ /DE-Log-Processing already exists"
-        databricks workspace mkdirs /DE-Log-Processing/bronze || echo "✅ /DE-Log-Processing/bronze already exists"
-        databricks workspace mkdirs /DE-Log-Processing/silver || echo "✅ /DE-Log-Processing/silver already exists"
-        databricks workspace mkdirs /DE-Log-Processing/gold || echo "✅ /DE-Log-Processing/gold already exists"
-        databricks workspace mkdirs /DE-Log-Processing/ml || echo "✅ /DE-Log-Processing/ml already exists"
+        databricks workspace mkdirs /DE-Log-Processing || echo "/DE-Log-Processing already exists"
+        databricks workspace mkdirs /DE-Log-Processing/bronze || echo "/DE-Log-Processing/bronze already exists"
+        databricks workspace mkdirs /DE-Log-Processing/silver || echo "/DE-Log-Processing/silver already exists"
+        databricks workspace mkdirs /DE-Log-Processing/gold || echo "/DE-Log-Processing/gold already exists"
+        databricks workspace mkdirs /DE-Log-Processing/ml || echo "/DE-Log-Processing/ml already exists"
         
         # Robust script deployment - try to create, continue if exists
         echo "Deploying scripts (robust approach)..."
         
         echo "Deploying Bronze notebook..."
-        databricks workspace import notebooks/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load --language PYTHON || echo "✅ Bronze notebook already exists"
+        databricks workspace import notebooks/bronze/raw_load.py /DE-Log-Processing/bronze/raw_load --language PYTHON || echo "Bronze notebook already exists"
         
         echo "Deploying Silver notebook..."
-        databricks workspace import notebooks/silver/silver_load.py /DE-Log-Processing/silver/silver_load --language PYTHON || echo "✅ Silver notebook already exists"
+        databricks workspace import notebooks/silver/silver_load.py /DE-Log-Processing/silver/silver_load --language PYTHON || echo "Silver notebook already exists"
         
         echo "Deploying Gold notebook..."
-        databricks workspace import notebooks/gold/gold_load.py /DE-Log-Processing/gold/gold_load --language PYTHON || echo "✅ Gold notebook already exists"
+        databricks workspace import notebooks/gold/gold_load.py /DE-Log-Processing/gold/gold_load --language PYTHON || echo "Gold notebook already exists"
         
         echo "Deploying ML notebook..."
-        databricks workspace import notebooks/ml/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection --language PYTHON || echo "✅ ML notebook already exists"
+        databricks workspace import notebooks/ml/ml_anomaly_detection.py /DE-Log-Processing/ml/ml_anomaly_detection --language PYTHON || echo "ML notebook already exists"
         
-        echo "✅ PySpark scripts deployment completed (robust approach - existing resources preserved)!"
+        echo "PySpark scripts deployment completed (robust approach - existing resources preserved)!"
 
   deploy-aks-services:
     needs: deploy-databricks-pipeline
@@ -160,23 +160,23 @@ jobs:
         
         # Robust Prometheus deployment
         echo "Deploying Prometheus..."
-        kubectl apply -f kubernetes/prometheus-pod.yaml || echo "✅ Prometheus already deployed"
+        kubectl apply -f kubernetes/prometheus-pod.yaml || echo "Prometheus already deployed"
         
         # Robust Grafana deployment  
         echo "Deploying Grafana..."
-        kubectl apply -f kubernetes/grafana-pod.yaml || echo "✅ Grafana already deployed"
+        kubectl apply -f kubernetes/grafana-pod.yaml || echo "Grafana already deployed"
         
         # Robust Pytest pod deployment
         echo "Deploying Pytest pod..."
-        kubectl apply -f kubernetes/pytest-pod.yaml || echo "✅ Pytest pod already deployed"
+        kubectl apply -f kubernetes/pytest-pod.yaml || echo "Pytest pod already deployed"
         
         # Wait for deployments to be ready (robust approach)
         echo "Waiting for deployments to be ready..."
-        kubectl wait --for=condition=available --timeout=300s deployment/prometheus || echo "✅ Prometheus already ready"
-        kubectl wait --for=condition=available --timeout=300s deployment/grafana || echo "✅ Grafana already ready"
-        kubectl wait --for=condition=ready --timeout=300s pod/pytest-pod || echo "✅ Pytest pod already ready"
+        kubectl wait --for=condition=available --timeout=300s deployment/prometheus || echo "Prometheus already ready"
+        kubectl wait --for=condition=available --timeout=300s deployment/grafana || echo "Grafana already ready"
+        kubectl wait --for=condition=ready --timeout=300s pod/pytest-pod || echo "Pytest pod already ready"
         
-        echo "🎯 MVP pods deployed to AKS successfully (robust approach)!"
+        echo " MVP pods deployed to AKS successfully (robust approach)!"
         echo "📊 Prometheus: Monitoring pipeline metrics"
         echo "📈 Grafana: Visualizing key metrics dashboard"
         echo "🧪 Pytest: Code coverage and testing"
@@ -224,7 +224,7 @@ jobs:
           "notebook_task": {
             "notebook_path": "/DE-Log-Processing/bronze/raw_load"
           }
-        }' | jq -r '.job_id') || echo "✅ Bronze Layer job already exists"
+        }' | jq -r '.job_id') || echo "Bronze Layer job already exists"
         
         if [ ! -z "$JOB_ID" ] && [ "$JOB_ID" != "null" ]; then
           echo "Running Bronze Layer job ID: $JOB_ID"
@@ -233,7 +233,7 @@ jobs:
           
           # Wait for job completion
           echo "Waiting for Bronze Layer job to complete..."
-          databricks runs wait --run-id $RUN_ID || echo "✅ Bronze Layer job completed"
+          databricks runs wait --run-id $RUN_ID || echo "Bronze Layer job completed"
         fi
         
         echo "Bronze Layer execution completed!"
@@ -257,7 +257,7 @@ jobs:
           "notebook_task": {
             "notebook_path": "/DE-Log-Processing/silver/silver_load"
           }
-        }' || echo "✅ Silver Layer job already exists or created"
+        }' || echo "Silver Layer job already exists or created"
         
         echo "Silver Layer execution completed!"
     
@@ -280,7 +280,7 @@ jobs:
           "notebook_task": {
             "notebook_path": "/DE-Log-Processing/gold/gold_load"
           }
-        }' || echo "✅ Gold Layer job already exists or created"
+        }' || echo "Gold Layer job already exists or created"
         
         echo "Gold Layer execution completed!"
     
@@ -313,10 +313,10 @@ jobs:
               }
             }
           ]
-        }' || echo "✅ ML Pipeline job already exists or created"
+        }' || echo "ML Pipeline job already exists or created"
         
         echo "ML Pipeline with MLflow execution completed!"
-        echo "🎯 Model trained and registered in Databricks MLflow"
+        echo " Model trained and registered in Databricks MLflow"
         echo "📊 Model serving available via MLflow endpoints"
 
   validate-pipeline-execution:
@@ -342,30 +342,30 @@ jobs:
         
         # Check if data exists in storage with timestamp
         echo "Checking storage containers with timestamp: $TIMESTAMP"
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Bronze data check completed"
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "silver-$TIMESTAMP" --name structured_logs.json --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Silver data check completed"
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "gold-$TIMESTAMP" --name openssh_logs_final.csv --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Gold data check completed"
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Bronze data check completed"
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "silver-$TIMESTAMP" --name structured_logs.json --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Silver data check completed"
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "gold-$TIMESTAMP" --name openssh_logs_final.csv --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Gold data check completed"
         
         # Robust AKS connectivity check
         echo "Checking AKS connectivity (robust approach)..."
-        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} || echo "✅ AKS credentials obtained"
+        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} || echo "AKS credentials obtained"
         
         # Check AKS MVP pods with robust error handling
         echo "Checking MVP pods status (robust approach)..."
-        kubectl get pods -l app=prometheus || echo "✅ Prometheus pod check completed"
-        kubectl get pods -l app=grafana || echo "✅ Grafana pod check completed"
-        kubectl get pods -l app=pytest || echo "✅ Pytest pod check completed"
+        kubectl get pods -l app=prometheus || echo "Prometheus pod check completed"
+        kubectl get pods -l app=grafana || echo "Grafana pod check completed"
+        kubectl get pods -l app=pytest || echo "Pytest pod check completed"
         
         echo "Checking services (robust approach)..."
-        kubectl get services || echo "✅ Services check completed"
+        kubectl get services || echo "Services check completed"
         
         echo "Checking Prometheus metrics endpoint (robust approach)..."
         kubectl port-forward service/prometheus-service 9090:9090 &
         sleep 10
-        curl -f http://localhost:9090/metrics || echo "✅ Prometheus metrics check completed"
+        curl -f http://localhost:9090/metrics || echo "Prometheus metrics check completed"
         
         echo "MVP deployment validation completed successfully (robust approach)!"
-        echo "🎯 Databricks: ETL + ML + MLflow"
+        echo " Databricks: ETL + ML + MLflow"
         echo "📊 Prometheus: Pipeline monitoring"
         echo "📈 Grafana: Metrics visualization"
         echo "🧪 Pytest: Code testing"
@@ -402,17 +402,17 @@ jobs:
         echo "Using timestamp: $TIMESTAMP"
         
         echo "Checking source data in Azure Storage..."
-        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Bronze data check completed"
+        az storage blob exists --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --container-name "bronze-$TIMESTAMP" --name raw_logs/OpenSSH_2k.log --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Bronze data check completed"
         
         echo "Checking Databricks workspace..."
         export DATABRICKS_HOST="https://${{ env.DATABRICKS_WORKSPACE }}.azuredatabricks.net"
         export DATABRICKS_TOKEN="${{ secrets.DATABRICKS_TOKEN }}"
-        databricks workspace list / || echo "✅ Databricks workspace check completed"
+        databricks workspace list / || echo "Databricks workspace check completed"
         
         echo "Checking AKS services..."
-        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} || echo "✅ AKS credentials obtained"
-        kubectl get pods || echo "✅ Pods check completed"
-        kubectl get services || echo "✅ Services check completed"
+        az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }} || echo "AKS credentials obtained"
+        kubectl get pods || echo "Pods check completed"
+        kubectl get services || echo "Services check completed"
     
     - name: Run Comprehensive Tests
       run: |

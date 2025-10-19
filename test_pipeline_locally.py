@@ -19,7 +19,7 @@ def run_command(command, description):
     
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
-        print(f"✅ {description} - SUCCESS")
+        print(f"{description} - SUCCESS")
         if result.stdout:
             print(f"Output: {result.stdout}")
         return True
@@ -31,7 +31,7 @@ def run_command(command, description):
 def check_file_exists(file_path, description):
     """Check if a file exists"""
     if Path(file_path).exists():
-        print(f"✅ {description} - EXISTS")
+        print(f"{description} - EXISTS")
         return True
     else:
         print(f"❌ {description} - NOT FOUND")
@@ -75,7 +75,7 @@ def main():
     directories = ["data/bronze", "data/silver", "data/gold", "data/ml_output", "models"]
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
-        print(f"✅ Created: {directory}")
+        print(f"Created: {directory}")
     
     # Run the pipeline
     print(f"\n🔄 EXECUTING DATA PIPELINE:")
@@ -107,9 +107,9 @@ def main():
     
     if all_outputs_exist:
         print(f"\n🎉 PIPELINE EXECUTION SUCCESSFUL!")
-        print(f"✅ All data layers processed successfully")
-        print(f"✅ ML model trained and saved")
-        print(f"✅ Anomaly detection completed")
+        print(f"All data layers processed successfully")
+        print(f"ML model trained and saved")
+        print(f"Anomaly detection completed")
         
         # Show file sizes
         print(f"\n📈 OUTPUT FILE SIZES:")
@@ -119,10 +119,10 @@ def main():
                 print(f"  {description}: {size:,} bytes")
         
         print(f"\n🚀 NEXT STEPS:")
-        print(f"1. ✅ Local pipeline works correctly")
+        print(f"1. Local pipeline works correctly")
         print(f"2. 🔧 Fix Databricks job execution in GitHub Actions")
         print(f"3. 📊 Verify data in Azure Storage after Databricks execution")
-        print(f"4. 🎯 Test manual Databricks job execution")
+        print(f"4.  Test manual Databricks job execution")
         
         return True
     else:

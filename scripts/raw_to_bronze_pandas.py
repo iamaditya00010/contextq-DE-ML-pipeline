@@ -158,7 +158,7 @@ def save_to_bronze(df, output_path: str, log_file: Path):
         
         log_message(log_file, f"  ✓ Partition {date}: {len(date_df)} records")
     
-    log_message(log_file, f"✅ Successfully wrote {len(df)} records to Bronze layer")
+    log_message(log_file, f"Successfully wrote {len(df)} records to Bronze layer")
     log_message(log_file, f"Format: Parquet (partitioned by date)")
 
 
@@ -178,7 +178,7 @@ def verify_bronze(output_path: str, log_file: Path):
     
     if all_data:
         combined_df = pd.concat(all_data, ignore_index=True)
-        log_message(log_file, f"✅ Verification successful: {len(combined_df)} records found")
+        log_message(log_file, f"Verification successful: {len(combined_df)} records found")
         return combined_df
     else:
         log_message(log_file, "❌ No data found in Bronze layer")

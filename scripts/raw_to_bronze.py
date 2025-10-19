@@ -134,7 +134,7 @@ def save_to_bronze(df, output_path: str, log_file: Path):
         .partitionBy("partition_date") \
         .parquet(output_path)
     
-    log_message(log_file, f"✅ Successfully wrote {df.count()} records to Bronze layer")
+    log_message(log_file, f"Successfully wrote {df.count()} records to Bronze layer")
     log_message(log_file, f"Format: Parquet (partitioned by date)")
 
 
@@ -152,7 +152,7 @@ def main():
         # Create Spark session
         log_message(log_file, "Creating Spark session...")
         spark = create_spark_session()
-        log_message(log_file, "✅ Spark session created")
+        log_message(log_file, "Spark session created")
         
         # Define paths
         raw_log_path = "data/bronze/logs/date=2025-10-16/application.log.gz"
@@ -184,7 +184,7 @@ def main():
         # Verify output
         log_message(log_file, "Verifying Bronze layer...")
         verify_df = spark.read.parquet(bronze_output_path)
-        log_message(log_file, f"✅ Verification successful: {verify_df.count()} records found")
+        log_message(log_file, f"Verification successful: {verify_df.count()} records found")
         
         # Show statistics
         log_message(log_file, "")

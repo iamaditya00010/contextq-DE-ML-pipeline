@@ -1058,7 +1058,7 @@ pytest -k test_name                # Run specific test
 
 ---
 
-## ✅ Final Checklist
+## Final Checklist
 
 Before submitting:
 
@@ -1077,7 +1077,7 @@ Before submitting:
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. Review the architecture plan
 2. Set up Azure account and install prerequisites

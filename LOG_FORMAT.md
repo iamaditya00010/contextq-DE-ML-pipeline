@@ -212,7 +212,7 @@ clean_df = parsed_df \
 
 ## Next Steps
 
-1. ✅ Log files generated
+1. Log files generated
 2. 🔄 **Create ETL pipeline** to parse logs
 3. ⏳ Transform and validate data
 4. ⏳ Save to Silver layer (Delta Lake)

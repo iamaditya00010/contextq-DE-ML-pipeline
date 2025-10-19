@@ -52,14 +52,14 @@ jobs:
         echo "Using timestamp: $TIMESTAMP"
         
         # Create containers
-        az storage container create --name bronze --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Bronze container already exists"
-        az storage container create --name silver --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Silver container already exists"
-        az storage container create --name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Gold container already exists"
+        az storage container create --name bronze --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Bronze container already exists"
+        az storage container create --name silver --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Silver container already exists"
+        az storage container create --name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Gold container already exists"
         
         # Upload source data
-        az storage blob upload --file logs/OpenSSH_2k.log --container-name bronze --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "✅ Source data already exists"
+        az storage blob upload --file logs/OpenSSH_2k.log --container-name bronze --name raw_logs/OpenSSH_2k.log --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} || echo "Source data already exists"
         
-        echo "✅ Source data uploaded successfully!"
+        echo "Source data uploaded successfully!"
     
     - name: Execute Databricks notebooks directly
       run: |
@@ -88,7 +88,7 @@ jobs:
         echo "Executing ML Layer..."
         databricks jobs run-now --job-id $(databricks jobs list --output json | jq -r '.jobs[] | select(.settings.name | contains("ML")) | .job_id' | head -1) || echo "ML job not found, creating new one"
         
-        echo "✅ All Databricks notebooks executed!"
+        echo "All Databricks notebooks executed!"
     
     - name: Verify data processing
       run: |
@@ -106,7 +106,7 @@ jobs:
         echo "Checking Gold layer..."
         az storage blob list --container-name gold --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} --output table
         
-        echo "✅ Data verification completed!"
+        echo "Data verification completed!"
     
     - name: Deploy AKS pods
       run: |
@@ -116,11 +116,11 @@ jobs:
         az aks get-credentials --resource-group ${{ env.MAIN_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER_NAME }}
         
         # Deploy MVP pods
-        kubectl apply -f kubernetes/prometheus-pod.yaml || echo "✅ Prometheus already deployed"
-        kubectl apply -f kubernetes/grafana-pod.yaml || echo "✅ Grafana already deployed"
-        kubectl apply -f kubernetes/pytest-pod.yaml || echo "✅ Pytest already deployed"
+        kubectl apply -f kubernetes/prometheus-pod.yaml || echo "Prometheus already deployed"
+        kubectl apply -f kubernetes/grafana-pod.yaml || echo "Grafana already deployed"
+        kubectl apply -f kubernetes/pytest-pod.yaml || echo "Pytest already deployed"
         
         # Check pod status
         kubectl get pods
         
-        echo "✅ AKS pods deployed successfully!"
+        echo "AKS pods deployed successfully!"

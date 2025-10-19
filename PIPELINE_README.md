@@ -267,21 +267,21 @@ Layers to run: BRONZE, SILVER, GOLD
 Script: scripts/bronze/raw_load.py
 ...
 
-✅ BRONZE layer completed successfully
+BRONZE layer completed successfully
 
 ==============================================================================
   Running SILVER Layer
 ==============================================================================
 ...
 
-✅ SILVER layer completed successfully
+SILVER layer completed successfully
 
 ==============================================================================
   Running GOLD Layer
 ==============================================================================
 ...
 
-✅ GOLD layer completed successfully
+GOLD layer completed successfully
 
 ==============================================================================
   PIPELINE SUMMARY
@@ -289,7 +289,7 @@ Script: scripts/bronze/raw_load.py
 Start Time:    2025-10-16 19:30:00
 End Time:      2025-10-16 19:30:45
 Duration:      0:00:45
-Status:        ✅ SUCCESS
+Status:        SUCCESS
 ==============================================================================
 
 🎉 Pipeline completed successfully!
@@ -337,19 +337,19 @@ python scripts/run_pipeline.py --layer bronze
 
 ---
 
-## ✅ Success Criteria
+## Success Criteria
 
-- ✅ Bronze: 2000 raw log lines converted to Parquet
-- ✅ Silver: All 2000 lines parsed with quality checks
-- ✅ Gold: ~1900-2000 quality-passed records in CSV
-- ✅ datetime field combines Date+Day+Time correctly
-- ✅ Original Date, Day, Time columns removed in Gold
+- Bronze: 2000 raw log lines converted to Parquet
+- Silver: All 2000 lines parsed with quality checks
+- Gold: ~1900-2000 quality-passed records in CSV
+- datetime field combines Date+Day+Time correctly
+- Original Date, Day, Time columns removed in Gold
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
-1. ✅ Local pipeline complete
+1. Local pipeline complete
 2. 🔄 Deploy to Azure Databricks
 3. ⏳ Orchestrate with Azure Data Factory
 4. ⏳ Add ML model training (anomaly detection)
